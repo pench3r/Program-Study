@@ -11,22 +11,44 @@ void ShowArray(double array[3][3]) {
 	}
 }
 
-// define Show result array func
-void ShowResultArray(ResultArray *array, int size) {
-	printf("%f", (*array)[0]);
-	for (int i=0; i<size; ++i) {
-		printf("%f ", (*array)[i]);
-	}	
-	printf("\n");
-}
+// define show fract2array func
+void ShowFract2Array(Fract2Array *array) {
+	(*array)[1][1].num = 2;
+	(*array)[1][1].deno = 2;
+	for (int i=0; i<ROW; ++i) {
+		for (int j=0; j<COL; ++j) {
+			PrintFract((*array)[i][j]);
+		}
+	}
+} 
 
 // define Print Fract func
-void PrintFract(Fract *fract) {
-	printf("%d/%d", fract->num, fract->deno);
+void PrintFract(Fract fract) {
+	assert(fract.deno != 0);	
+	if (fract.num % fract.deno == 0) {
+		printf("%d", fract.num/fract.deno);
+		return;
+	}
+	printf("%d/%d", fract.num, fract.deno);
+}
+
+// define Fract2array init func
+void Fract2ArrayInit(Fract2Array *array) {
+	for (int i=0; i<ROW; ++i) {
+		for (int j=0; j<COL; ++j) {
+			(*array)[i][j].num = 2;
+			(*array)[i][j].deno = 2;
+		}
+	}
+}
+
+// define Intarray to Fractarray func
+Fract *DoubleaToFracta(double array[ROW][COL]) {
+	return NULL;
 }
 
 // define Gauss func
-void Gauss(double fac_array[ROW][COL], double con_array[ROW], double (*result_array)[ROW]) {
+void Gauss(double fac_array[ROW][COL], double con_array[ROW], double (*result_array)[ROW]) { 
 	// find max abs(value) in first col, row = 1 	
 // 	while(row < ROW && col < COL) {
 // 		row = 0
@@ -52,6 +74,5 @@ void Gauss(double fac_array[ROW][COL], double con_array[ROW], double (*result_ar
 // 		col++;
 //	}
 	// acquire final result
-	(*result_array)[0] = 16;
 	return;
 }
