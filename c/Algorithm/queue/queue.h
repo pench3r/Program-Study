@@ -10,8 +10,8 @@ typedef struct QueueNode_ {
 
 typedef struct Queue_ {
 	int size;
-	struct QueueNode *queue_head;
-	struct QueueNode *queue_tail;
+	QueueNode *queue_head;
+	QueueNode *queue_tail;
 }Queue;
 
 /* struct queue init func
@@ -24,10 +24,25 @@ void QueueInit(Queue *queue);
 /* struct queue equeue func
    parameters:
 		Queue *queue,
-		QueueNode *node,
+		int data,
    return: bool.
 */
-bool QueueEqueue(Queue *queue, QueueNode *node);
+bool QueueEqueue(Queue *queue, int data);
+
+/* struct queue dqueue func
+   parameters:
+		Queue *queue,
+		int *data,
+   return: bool.
+*/
+bool QueueDqueue(Queue *queue, int *data);
+
+/* struct queue destory func
+   parameters:
+		Queue *queue,
+   return: void.
+*/
+bool QueueDestory(Queue *queue);
 
 /* struct queue show func
    parameters:
@@ -35,5 +50,11 @@ bool QueueEqueue(Queue *queue, QueueNode *node);
    return: void.
 */
 void QueueShow(Queue *queue);
+
+#define QueuePeek(queue) ( (queue)->size == 0 ? -1 : ((queue)->queue_head->data))
+
+#define QueueNextNode(node) ((node)->next_node)
+
+#define QueueSize(queue) ((queue)->size)
 
 #endif /* __ALGORITHM_QUEUE__H */
