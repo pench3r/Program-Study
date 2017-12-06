@@ -45,13 +45,43 @@ bool BitreeInsertRightNode(Bitree *bitree, BitreeNode *bitree_node, int data);
    parameters:
 		Bitree *bitree,
 		BitreeNode *bitree_node,
-		int *data,
    return: bool.
 */
 bool BitreeRemoveLeftNode(Bitree *bitree, BitreeNode *bitree_node);
 
+/* struct bitree remove right func
+   parameters:
+		Bitree *bitree,
+		BitreeNode *bitree_node,
+   return: bool.
+*/
+bool BitreeRemoveRightNode(Bitree *bitree, BitreeNode *bitree_node);
+
+/* struct bitree preorder traversal func
+   parameters:
+		Bitree *bitree,
+		BitreeNode *bitree_node,
+   return: void.
+*/
+void BitreePreorderTraversal(Bitree *bitree, BitreeNode *bitree_node);
+
+/* struct bitree inorder traversal func
+   parameters:
+		Bitree *bitree,
+		BitreeNode *bitree_node,
+   return: void.
+*/
+void BitreeInorderTraversal(Bitree *bitree, BitreeNode *bitree_node);
+
 void BitreeShow(Bitree *bitree);
 
+
+void BitreeDestory(Bitree *bitree);
+
 #define BitreeRootNode(bitree) ((bitree)->bitree_root)
+
+#define LeftNode(bitree_node) ((bitree_node)->node_left)
+
+#define RightNode(bitree_node) ((bitree_node)->node_right)
 
 #endif /* __ALGORITHM_BITREE__H */

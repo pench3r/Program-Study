@@ -15,6 +15,15 @@ int main(int argc, char *argv[]) {
 
 	BitreeInsertRightNode(&bitree_t, tmp_node, 20);
 	printf("Insert Right Node data is %d.\n", 20);
+	tmp_node = LeftNode(tmp_node);
+
+	BitreeInsertRightNode(&bitree_t, tmp_node, 12);
+	printf("Insert Right Node data is %d.\n", 12);
+
+	printf("Begin to remove node\n");
+	tmp_node = BitreeRootNode(&bitree_t);
+	BitreeRemoveRightNode(&bitree_t, tmp_node);
 	BitreeShow(&bitree_t);
+	BitreeDestory(&bitree_t);
 	return 0;
 }
