@@ -73,6 +73,14 @@ void BitreePreorderTraversal(Bitree *bitree, BitreeNode *bitree_node);
 */
 void BitreeInorderTraversal(Bitree *bitree, BitreeNode *bitree_node);
 
+/* struct bitree postorder func
+   parameters:
+		Bitree *bitree,
+		BitreeNode *bitree_node,
+   return: void.
+*/
+void BitreePostorderTraversal(Bitree *bitree, BitreeNode *bitree_node);
+
 void BitreeShow(Bitree *bitree);
 
 

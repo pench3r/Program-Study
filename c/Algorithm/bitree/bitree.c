@@ -101,6 +101,8 @@ void BitreeShow(Bitree *bitree) {
 	printf("Begin to show bitree information: \n");
 	printf("The tree root data is %d.\n", bitree->bitree_root->data);
 	BitreePreorderTraversal(bitree, bitree->bitree_root);
+	BitreeInorderTraversal(bitree, bitree->bitree_root);
+	BitreePostorderTraversal(bitree, bitree->bitree_root);
 }
 
 // define bitree preorder traversal
@@ -126,12 +128,26 @@ void BitreeInorderTraversal(Bitree *bitree, BitreeNode *bitree_node) {
 	}
 	if (bitree_node->node_left != NULL) {
 		BitreeInorderTraversal(bitree, bitree_node->node_left);
-	} else {
-		printf("The Inorder Traversal data is %d.\n", bitree_node->data);
 	}
+	printf("The Inorder Traversal data is %d.\n", bitree_node->data);
 	if (bitree_node->node_right != NULL) {
 		BitreeInorderTraversal(bitree, bitree_node->node_right);
 	}
+}
+
+// define bitree postorder traversal
+void BitreePostorderTraversal(Bitree *bitree, BitreeNode *bitree_node) {
+	if (bitree->size == 0) {
+		printf("Please init bitree!!!\n");
+		exit(1);
+	}
+	if (bitree_node->node_left != NULL) {
+		BitreePostorderTraversal(bitree, bitree_node->node_left);
+	}
+	if (bitree_node->node_right != NULL) {
+		BitreePostorderTraversal(bitree, bitree_node->node_right);
+	}
+	printf("The Postrorder Traversal data is %d.\n", bitree_node->data);
 }
 
 // define bitree destory func

@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
 	BitreeInsertRightNode(&bitree_t, tmp_node, 12);
 	printf("Insert Right Node data is %d.\n", 12);
 
+	BitreeShow(&bitree_t);
 	printf("Begin to remove node\n");
 	tmp_node = BitreeRootNode(&bitree_t);
 	BitreeRemoveRightNode(&bitree_t, tmp_node);
