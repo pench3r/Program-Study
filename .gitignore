@@ -33,3 +33,4 @@
 
 # debug
 *.gdb_history
+*.swap
