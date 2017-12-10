@@ -23,14 +23,35 @@ typedef struct Clist_ {
 */
 void ClistInit(Clist *clist);
 
-/* struct clist insert func
+/* struct clist insert func, insert node after clist_node. if clist_node is NULL, insert node after head node, else insert node afoter clist_node.
    parameters:
 		Clist *clist,
+		ClistNode *clist_node,
 		int data,
    return: bool.
 */
-bool ClistInsert(Clist *clist, int data);
+bool ClistInsertNextNode(Clist *clist,ClistNode *clist_node, int data);
+
+/* struct clist remove func, remove node after clist_node.
+   parameters:
+		Clist *clist,
+		ClistNode *clist_node,
+		int *data,
+   return: bool.	
+*/
+bool ClistRemoveNextNode(Clist *clist, ClistNode *clist_node, int *data);
+
+/* struct clist destory func
+   parameters:
+		Clist *clist,
+   return: void.
+*/
+void ClistDestory(Clist *clist);
 
 void ClistShow(Clist *clist);
+
+#define ClistHeadNode(clist) ((clist)->clist_head)
+
+#define ClistNextNode(clist_node) ((clist_node)->next_clist_node)
 
 #endif /* __ALGORITHM_CLIST__H */
