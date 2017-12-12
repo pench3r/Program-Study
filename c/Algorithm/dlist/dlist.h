@@ -33,6 +33,35 @@ void DlistInit(Dlist *dlist);
 */
 bool DlistInsertNextNode(Dlist *dlist, DlistNode *dlist_node, int data);
 
+/* struct dlist insert prev func
+   parameters:
+		Dlist *dlist,
+		DlistNode *dlist_node,
+   return: bool.
+*/
+bool DlistInsertPrevNode(Dlist *dlist, DlistNode *dlist_node, int data);
+
+/* struct dlist remove next func
+   parameters:
+		Dlist *dlist,
+		DlistNode *dlist_node,
+		int *data,
+   return: bool.
+*/
+bool DlistRemoveNextNode(Dlist *dlist, DlistNode *dlist_node, int *data);
+
+/* struct dlist remove prev func
+   parameters:
+		Dlist *dlist,
+		DlistNode *dlist_node,
+		int *data,
+   return: bool.
+*/
+bool DlistRemovePrevNode(Dlist *dlist, DlistNode *dlist_node, int *data);
+
+
+
+void DlistDestory(Dlist *dlist);
 
 void DlistShow(Dlist *dlist);
 
