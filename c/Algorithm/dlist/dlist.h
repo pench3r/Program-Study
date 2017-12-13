@@ -67,6 +67,8 @@ void DlistShow(Dlist *dlist);
 
 #define DlistHeadNode(dlist) ((dlist)->dlist_head)
 
+#define DlistTailNode(dlist) ((dlist)->dlist_tail)
+
 #define NextNode(node) ((node)->node_next)
 
 #endif /* __ALGORITHM_DLIST__H */

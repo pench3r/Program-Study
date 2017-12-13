@@ -3,7 +3,7 @@
 int main(int argc, char *argv[]) {
 	Dlist dlist_t;
 	DlistNode *tmp_node;
-	int *recv_num;
+	int *recv_num = (int *)malloc(sizeof(int));
 	DlistInit(&dlist_t);
 	DlistInsertNextNode(&dlist_t, NULL, 10);
 	tmp_node = DlistHeadNode(&dlist_t);	
@@ -22,5 +22,6 @@ int main(int argc, char *argv[]) {
 	printf("remove next node and data is %d.\n", *recv_num);
 	DlistShow(&dlist_t);
 	DlistDestory(&dlist_t);
+	free(recv_num);
 	return 0;
 }
