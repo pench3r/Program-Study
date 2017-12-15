@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 typedef struct listnode_ {
 	int data;
@@ -31,10 +32,22 @@ void ListInit(List *list);
 		int data,
    return: bool.
 */
-bool ListInsert(List *list, ListNode *list_node, int data);
+bool ListInsertNext(List *list, ListNode *list_node, int data);
+
+/* struct list remove func
+   parameters:
+		List *list,
+		int data,
+   return: bool.
+*/
+bool ListRemove(List *list, int data);
 
 void ListShow(List *list);
 
+void ListDestory(List *list);
+
 #define NextNode(node) ((node)->node_next)
+
+#define ListHeadNode(list) ((list)->list_head)
 
 #endif /* __ALGORITHM_LIST__H */
