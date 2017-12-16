@@ -42,6 +42,14 @@ bool ListInsertNext(List *list, ListNode *list_node, int data);
 */
 bool ListRemove(List *list, int data);
 
+/* struct list search func
+   parameters:
+		List *list,
+		int data,
+   return: int.
+*/
+int ListSearch(List *list, int data);
+
 void ListShow(List *list);
 
 void ListDestory(List *list);

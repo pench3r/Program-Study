@@ -64,6 +64,20 @@ bool ListRemove(List *list, int data) {
 	return false;
 }
 
+// define list search func
+int ListSearch(List *list, int data) {
+	ListNode *tmp_node;
+	tmp_node = ListHeadNode(list);
+	for (int i = 0; i < list->size; ++i) {
+		if ( tmp_node->data == data) {
+			printf("data have fouded!!!\n");
+			return i;
+		}
+		tmp_node = NextNode(tmp_node);
+	}
+	return -1;
+}
+
 // define list show func
 void ListShow(List *list) {
 	ListNode *tmp_node;
