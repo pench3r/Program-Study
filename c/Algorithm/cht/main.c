@@ -9,5 +9,8 @@ int main(int argc, char *argv[]) {
 	ChtInsert(&cht_t, 8);
 	ChtInsert(&cht_t, 9);
 	ChtShow(&cht_t);
+	ChtRemove(&cht_t, 5);
+	ChtShow(&cht_t);
+	ChtDestory(&cht_t);
 	return 0;
 }

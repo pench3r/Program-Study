@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "../list/list.h"
 
 typedef struct cht_ {
@@ -28,6 +29,16 @@ void ChtInit(Cht *cht, int buckets);
 */
 bool ChtInsert(Cht *cht, int data);
 
+/* struct cht remove func
+   parameters:
+		Cht *cht,
+		int data,
+   return: bool.
+*/
+bool ChtRemove(Cht *cht, int data);
+
 void ChtShow(Cht *cht);
+
+void ChtDestory(Cht *cht);
 
 #endif /* __ALGORITHM_CHT__H */
