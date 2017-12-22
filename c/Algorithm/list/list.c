@@ -70,12 +70,16 @@ int ListSearch(List *list, int data) {
 	tmp_node = ListHeadNode(list);
 	for (int i = 0; i < list->size; ++i) {
 		if ( tmp_node->data == data) {
+#ifdef DEBUG
 			printf("data have founded!!!\n");
+#endif
 			return i;
 		}
 		tmp_node = NextNode(tmp_node);
 	}
+#ifdef DEBUG
 	printf("data not founded!!!\n");
+#endif
 	return -1;
 }
 
