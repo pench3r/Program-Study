@@ -15,13 +15,13 @@
 */
 void InsertSort_1(int array[], int size);
 
-/* insertion sort version 2 func
+/* recursive insertion sort version 2 func
    parameters:
 		int array[],
 		int size,
    return: void.
 */
-void InsertSort_2(int array[], int size);
+void RecursiveInsertSort(int array[], int size);
 
 /* array show func
    parameters:

@@ -19,8 +19,20 @@ void InsertSort_1(int array[], int size) {
 }
 
 // define insert sort version 2 func
-void InsertSort_2(int array[], int size) {
-	return;
+void RecursiveInsertSort(int array[], int size) {
+	size = size - 1;
+	if (size > 0) {
+		RecursiveInsertSort(array, size);	
+		int insert_num = array[size];
+		int index = size-1;
+		while (index >=0 && (insert_num < array[index])) {
+			array[index+1] = array[index];	
+			index--;	
+		}
+		array[index+1] = insert_num;
+	} else {
+		return;
+	}
 }
 
 // define array show func
