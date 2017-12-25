@@ -35,6 +35,18 @@ void RecursiveInsertSort(int array[], int size) {
 	}
 }
 
+// define tail recursive insertion sort fun
+int * TailRecursiveInsertSort(int array[], int tmp[], int tmp_size, int array_size) {
+	if (array_size == 0) return tmp;
+	tmp[tmp_size] = array[tmp_size];
+	for (int i=tmp_size; i>=1; --i) {
+		if (tmp[i] < tmp[i-1]) {
+			ArrayDataSwap(&tmp[i], &tmp[i-1]);
+		}
+	}
+	return TailRecursiveInsertSort(array, tmp, tmp_size+1, array_size-1);	
+}
+
 // define array show func
 void ArrayShow(int array[], int size) {
 	printf("The array data is:\n");

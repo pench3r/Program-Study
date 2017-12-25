@@ -23,6 +23,16 @@ void InsertSort_1(int array[], int size);
 */
 void RecursiveInsertSort(int array[], int size);
 
+/* tail recursive insertion sort func
+   parameters:
+		int array[],
+		int tmp[],
+		int tmp_size,
+		int array_size,
+   return: int *.
+*/
+int * TailRecursiveInsertSort(int array[], int tmp[], int tmp_size, int array_size);
+
 /* array show func
    parameters:
 		int array[],
