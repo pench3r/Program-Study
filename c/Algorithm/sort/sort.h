@@ -33,6 +33,15 @@ void RecursiveInsertSort(int array[], int size);
 */
 int * TailRecursiveInsertSort(int array[], int tmp[], int tmp_size, int array_size);
 
+/* quick sort func
+   parameters:
+		int array[],
+		int left,
+		int right,
+   return: void.
+*/
+void QuickSort(int array[], int left, int right);
+
 /* array show func
    parameters:
 		int array[],
