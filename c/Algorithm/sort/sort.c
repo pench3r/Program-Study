@@ -49,7 +49,7 @@ int * TailRecursiveInsertSort(int array[], int tmp[], int tmp_size, int array_si
 
 // define quick sort func
 void QuickSort(int array[], int left, int right) {
-	if (left >= right || left < 0) return;
+	if (left >= right) return;
 	int pivot = array[right];	
 	int store_index = left;
 	for (int i=left; i<right; ++i) {
@@ -73,10 +73,8 @@ void ArrayShow(int array[], int size) {
 
 // define array data swap func
 void ArrayDataSwap(int *x, int *y) {
-	if (x == y) {
-		return;
-	}
-	*x = *y ^ *x;
-	*y = *y ^ *x;
-	*x = *y ^ *x;	
+	if (x == y) return;
+	*x ^= *y;
+	*y ^= *x;
+	*x ^= *y;	
 }
