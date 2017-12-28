@@ -63,6 +63,23 @@ void QuickSort(int array[], int left, int right) {
 	QuickSort(array, store_index+1, right);
 }
 
+// define merge sort func
+void MergeSort(int array[], int left, int right) {
+	if (right-left < 1) return;
+	int middle = left + (right - left) / 2; 
+	MergeSort(array, left, middle);
+	MergeSort(array, middle+1, right);
+	for (int i = middle+1; i <= right; ++i) {
+		int tmp = array[i];
+		int index = i-1; 
+		while (index >= 0 && (tmp < array[index])) {
+			array[index+1] = array[index];
+			index--;
+		}
+		array[index+1] = tmp;
+	}
+}
+
 // define array show func
 void ArrayShow(int array[], int size) {
 	printf("The array data is:\n");
