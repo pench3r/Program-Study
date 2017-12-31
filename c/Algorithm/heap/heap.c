@@ -8,8 +8,8 @@ void HeapInit(Heap *heap, int level) {
 	heap->buf = (int *)calloc(heap->size, sizeof(int));
 } 
 
-// define heap insert func
-bool HeapInsert(Heap *heap, int index, int data) {
+// define heap insert1 func
+bool HeapInsert1(Heap *heap, int index, int data) {
 	if (index >= heap->size) return false;
 	if (heap->buf[index] == 0) {
 		heap->buf[index] = data;
@@ -17,17 +17,45 @@ bool HeapInsert(Heap *heap, int index, int data) {
 	}
 	// insert left
 	if (heap->buf[index] > data) {
-		HeapInsert(heap, index * 2 + 1, data); 	
+		HeapInsert1(heap, index * 2 + 1, data); 	
 	} else if (heap->buf[index] < data) {
 	// insert right
-		HeapInsert(heap, index * 2 + 2, data);
+		HeapInsert1(heap, index * 2 + 2, data);
+	}
+}
+
+// define heap insert func
+bool HeapInsert(Heap *heap, int data) {
+	if (heap->len == heap->size) {
+#ifdef DEBUG
+		printf("The heap is full.\n");
+#endif
+		return false;
+	}
+	if (heap->buf[heap->len] == 0) {
+		heap->buf[heap->len] = data;
+		heap->len++;
+	}
+	if (heap->len <= 1) return true;
+	HeapPrecolateUp(heap, heap->len-1);
+	return true;
+}
+
+// define heap precolate up func
+void HeapPrecolateUp(Heap *heap, int position) {
+	if (position <= 0) return;
+	if (heap->buf[position]	> heap->buf[NodeParent(position)]) {
+		ArrayDataSwap(&heap->buf[position], &heap->buf[NodeParent(position)]);
+		HeapPrecolateUp(heap, NodeParent(position));
 	}
 }
 
 // define heap show func
 void HeapShow(Heap *heap) {
+	printf("%.*s", (int)pow(2, heap->level-1), "                                               ");
 	printf("%d\n", heap->buf[0]);
 	for (int level=2; level <= heap->level; ++level) {
+		printf("%.*s", (int)pow(2, heap->level-level+1), "                                                 ");
 		for (int i = 0; i < pow(2, level-1); ++i) {
 			printf("%d  ", heap->buf[(int)pow(2, level-1)-1+i]);
 		}

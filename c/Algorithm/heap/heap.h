@@ -1,9 +1,7 @@
 #ifndef __ALGORITHM_HEAP__H
 #define __ALGORITHM_HEAP__H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include "../sort/sort.h"
 #include <math.h>
 
 
@@ -23,7 +21,7 @@ typedef struct heap_ {
 */
 void HeapInit(Heap *heap, int level);
 
-/* struct heap insert func
+/* struct heap insert1 func
    desc:
 		insert left node index is: index * 2 + 1;
 		insert right node index is: index * 2 + 2;
@@ -33,7 +31,24 @@ void HeapInit(Heap *heap, int level);
 		int data,
    return: bool.
 */
-bool HeapInsert(Heap *heap, int index, int data);
+bool HeapInsert1(Heap *heap, int index, int data);
+
+/* struct heap insert func
+   parameters:
+		Heap *heap,
+		int data,
+   return: bool.
+*/
+bool HeapInsert(Heap *heap, int data);
+
+/* struct heap precolate up func
+   desc:
+		parent node index is: (node_index-1)/2
+   parameters:
+		Heap *heap,
+   return: void.
+*/
+void HeapPrecolateUp(Heap *heap, int position);
 
 /* struct heap show func
    parameters:
@@ -41,5 +56,7 @@ bool HeapInsert(Heap *heap, int index, int data);
    return: void.
 */
 void HeapShow(Heap *heap);
+
+#define NodeParent(node) ((node-1)/2)
 
 #endif /* __ALGORITHM_HEAP__H */
