@@ -50,6 +50,21 @@ bool HeapInsert(Heap *heap, int data);
 */
 void HeapPrecolateUp(Heap *heap, int position);
 
+/* struct heap remove func
+   parameters:
+		Heap *heap,
+   return: int.
+*/
+int HeapRemove(Heap *heap);
+
+/* struct heap precolate down func
+   parameters:
+		Heap *heap,
+		int position,
+   return: void.
+*/
+void HeapPrecolateDown(Heap *heap, int position);
+
 /* struct heap show func
    parameters:
 		Heap *heap,
@@ -58,5 +73,9 @@ void HeapPrecolateUp(Heap *heap, int position);
 void HeapShow(Heap *heap);
 
 #define NodeParent(node) ((node-1)/2)
+
+#define NodeLeftChild(node) (node*2+1)
+
+#define NodeRightChild(node) (node*2+2)
 
 #endif /* __ALGORITHM_HEAP__H */

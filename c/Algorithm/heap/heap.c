@@ -50,6 +50,26 @@ void HeapPrecolateUp(Heap *heap, int position) {
 	}
 }
 
+// define heap remove func
+int HeapRemove(Heap *heap) {
+	int node_data = heap->buf[0];
+	heap->buf[0] = 0;
+	ArrayDataSwap(&heap->buf[0], &heap->buf[heap->len-1]);
+	heap->len--;
+	HeapPrecolateDown(heap, 0);
+	return node_data;
+}
+
+// define heap precolate down func
+void HeapPrecolateDown(Heap *heap, int position) {
+	int *max_node = heap->buf[NodeLeftChild(position)] > heap->buf[NodeRightChild(position)] ? &heap->buf[NodeLeftChild(position)] : &heap->buf[NodeRightChild(position)];
+	if (heap->buf[position] < *max_node) {
+		ArrayDataSwap(&heap->buf[position], max_node);
+		HeapPrecolateDown(heap, max_node-heap->buf);
+	}
+	
+}
+
 // define heap show func
 void HeapShow(Heap *heap) {
 	printf("%.*s", (int)pow(2, heap->level-1), "                                               ");
