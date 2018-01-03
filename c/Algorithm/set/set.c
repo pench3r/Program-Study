@@ -87,7 +87,9 @@ bool SetIsEqual(Set *set_a, Set *set_b) {
 
 // define set show func
 void SetShow(Set *set) {
+#ifdef DEBUG
 	printf("Show the set information: \n");
+#endif
 	ListShow(set);
 }
 

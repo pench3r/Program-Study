@@ -86,12 +86,14 @@ int ListSearch(List *list, int data) {
 // define list show func
 void ListShow(List *list) {
 	ListNode *tmp_node;
+#ifdef DEBUG
 	printf("Show the list information: \n");
 	printf("the list head data is %d.\n", list->list_head? list->list_head->data: 0);
 	printf("the list tail data is %d.\n", list->list_tail ? list->list_tail->data: 0);
+#endif
 	tmp_node = list->list_head;
 	for (int i = 0; i<list->size; ++i) {
-		printf("\tThe list data is %d.\n", tmp_node->data);
+		printf(" The data is %d. ", tmp_node->data);
 		tmp_node = NextNode(tmp_node); 
 	}
 }

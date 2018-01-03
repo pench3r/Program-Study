@@ -30,6 +30,22 @@ void GraphInit(Graph *graph);
 */
 bool GraphInsertVertex(Graph *graph, int data);
 
+/* struct graph search func
+   parameters:
+		Graph *graph,
+		int data,
+   return: int.
+*/
+int GraphSearchVertex(Graph *graph, int data);
+
+/* struct graph insert edge func
+   parameters:
+		Graph *graph,
+		int data1,
+		int data2,
+*/
+bool GraphInsertEdge(Graph *graph, int data1, int data2);
+
 /* struct graph show func
    parameters:
 		Graph *graph,
