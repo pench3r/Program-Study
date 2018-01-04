@@ -69,3 +69,12 @@ void GraphShow(Graph *graph) {
 		printf("\n");
 	}
 }
+
+// define graph destory func
+void GraphDestory(Graph *graph) {
+	for (int i=0; i<graph->vertex_count; ++i) {
+		SetDestory(&graph->adjlists[i]->adjcent);
+		free(graph->adjlists[i]);
+	}
+	printf("The graph has destory.\n");
+}

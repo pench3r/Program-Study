@@ -62,4 +62,11 @@ bool VertexIsAdjcent(Graph *graph, int data1, int data2);
 */
 void GraphShow(Graph *graph);
 
+/* struct graph destory func
+   parameters:
+		Graph *graph,
+   return: void.
+*/
+void GraphDestory(Graph *graph);
+
 #endif /* __ALGORITHM_GRAPH__H */
