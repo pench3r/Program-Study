@@ -41,10 +41,19 @@ int GraphSearchVertex(Graph *graph, int data);
 /* struct graph insert edge func
    parameters:
 		Graph *graph,
+		const int data1,
+		const int data2,
+*/
+bool GraphInsertEdge(Graph *graph, const int data1, const int data2);
+
+/* struct vertex isadjcent func
+   parameters:
+		Graph *graph,
 		int data1,
 		int data2,
+   return: bool.
 */
-bool GraphInsertEdge(Graph *graph, int data1, int data2);
+bool VertexIsAdjcent(Graph *graph, int data1, int data2); 
 
 /* struct graph show func
    parameters:

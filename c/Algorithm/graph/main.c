@@ -10,6 +10,7 @@ int main(int argc, char *argv[]) {
 	GraphInsertEdge(&graph_t, 10, 20);
 	GraphInsertEdge(&graph_t, 30, 20);
 	GraphInsertEdge(&graph_t, 30, 20);
+	printf("is adjcent %d.\n", VertexIsAdjcent(&graph_t, 10, 30));
 	GraphShow(&graph_t);
 	return 0;
 }

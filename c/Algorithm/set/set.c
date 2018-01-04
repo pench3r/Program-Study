@@ -58,7 +58,7 @@ bool SetUnion(Set *set_u, Set *set_a, Set *set_b) {
 }
 
 // define set is member func
-bool SetIsMember(Set *set, int data) {
+int SetIsMember(Set *set, int data) {
 	return ListSearch(set, data);
 }
 

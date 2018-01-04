@@ -35,11 +35,27 @@ bool GraphInsertEdge(Graph *graph, int data1, int data2) {
 	int index = GraphSearchVertex(graph, data1);	
 	if (index < 0) {
 #ifdef DEBUG
-		printf("The data nout found!!!\n");
+		printf("The data not found!!!\n");
 #endif
 		return false;
 	}
-	if(SetInsert(&graph->adjlists[index]->adjcent, data2)) return true;
+	if (SetInsert(&graph->adjlists[index]->adjcent, data2)) {
+		graph->edge_count++;
+		return true;
+	}
+	return false;
+}
+
+// define vertex isadjcent func
+bool VertexIsAdjcent(Graph *graph, const int data1, const int data2) {
+	int index = GraphSearchVertex(graph, data1);
+	if (index < 0) {
+#ifdef DEBUG
+		printf("The data not found!!!\n"); 
+#endif
+		return false;
+	}
+	if (SetIsMember(&graph->adjlists[index]->adjcent, data2) >= 0) return true;	
 	return false;
 }
 

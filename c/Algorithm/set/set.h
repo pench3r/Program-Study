@@ -60,9 +60,9 @@ bool SetIntersec(Set *seti, Set *set_a, Set *set_b);
    parameters:
 		Set *set,
 		int data,
-   return: bool.
+   return: int.
 */
-bool SetIsMember(Set *set, int data);
+int SetIsMember(Set *set, int data);
 
 /* struct set union func
    parameters:
