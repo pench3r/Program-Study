@@ -5,10 +5,21 @@
 #include <stdlib.h>
 #include <math.h>
 #define ROW 3
-#define COL 4
+#define COL 3 
 
-void ShowArray(double array[3][2]);
+typedef double ResultArray[ROW];
 
-void Gauss(double fac_array[ROW][COL], double con_array[ROW]);
+typedef struct fract_ {
+	int num;
+	int deno;
+} Fract;
+
+void PrintFract(Fract *fract);
+
+void ShowArray(double array[3][3]);
+
+void ShowResultArray(ResultArray *array, int size);
+
+void Gauss(double fac_array[ROW][COL], double con_array[ROW], double (*result_array)[ROW]);
 
 #endif /* __ALGORITHM_NUMTHOD__H */
