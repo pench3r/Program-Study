@@ -13,12 +13,11 @@ void ShowArray(double array[3][3]) {
 
 // define show fract2array func
 void ShowFract2Array(Fract2Array *array) {
-	(*array)[1][1].num = 2;
-	(*array)[1][1].deno = 2;
 	for (int i=0; i<ROW; ++i) {
 		for (int j=0; j<COL; ++j) {
 			PrintFract((*array)[i][j]);
 		}
+		printf("\n");
 	}
 } 
 
@@ -26,18 +25,18 @@ void ShowFract2Array(Fract2Array *array) {
 void PrintFract(Fract fract) {
 	assert(fract.deno != 0);	
 	if (fract.num % fract.deno == 0) {
-		printf("%d", fract.num/fract.deno);
+		printf("%d ", fract.num/fract.deno);
 		return;
 	}
-	printf("%d/%d", fract.num, fract.deno);
+	printf("%d/%d ", fract.num, fract.deno);
 }
 
 // define Fract2array init func
 void Fract2ArrayInit(Fract2Array *array) {
 	for (int i=0; i<ROW; ++i) {
 		for (int j=0; j<COL; ++j) {
-			(*array)[i][j].num = 2;
-			(*array)[i][j].deno = 2;
+			(*array)[i][j].num = i;
+			(*array)[i][j].deno = i+1;
 		}
 	}
 }
