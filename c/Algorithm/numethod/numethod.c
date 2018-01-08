@@ -25,10 +25,10 @@ void ShowFract2Array(Fract2Array *array) {
 void PrintFract(Fract fract) {
 	assert(fract.deno != 0);	
 	if (fract.num % fract.deno == 0) {
-		printf("%d ", fract.num/fract.deno);
+		printf("%4d ", fract.num/fract.deno);
 		return;
 	}
-	printf("%d/%d ", fract.num, fract.deno);
+	printf("%2d/%d ", fract.num, fract.deno);
 }
 
 // define Fract2array init func
@@ -41,9 +41,29 @@ void Fract2ArrayInit(Fract2Array *array) {
 	}
 }
 
+// define one-demonid int array to fractarray func
+void DoubleaToFract_one(double oarray[ROW], FractArray farray) {
+	for (int i=0; i<ROW; ++i) {
+		farry[i].num = oarray[i];
+		farry[i].deno = 1;
+	}
+}
+
 // define Intarray to Fractarray func
-Fract *DoubleaToFracta(double array[ROW][COL]) {
-	return NULL;
+void DoubleaToFracta2(double darray[ROW][COL], Fract2Array farray) {
+	for (int i=0; i<ROW; ++i) {
+		for (int j=0; j<COL; ++j) {
+			farray[i][j].num = darray[i][j];
+			farray[i][j].deno = 1;
+		}
+	}	
+}
+
+// define fract add func
+void FractAdd(Fract fract1, Fract fract2) {
+	if (fract1.deno == 1 && fract2.deno == 1) {
+		return;	
+	}
 }
 
 // define Gauss func

@@ -18,9 +18,13 @@ typedef struct fract_ {
 typedef Fract FractArray[ROW];
 typedef Fract Fract2Array[ROW][COL];
 
-Fract2Array *DoubleaToFraca(double array[ROW][COL]);
+void DoubleaToFracta_one(double oarray[ROW][COL], FractArray farray);
+
+void DoubleaToFracta2(double darray[ROW][COL], Fract2Array farray);
 
 void Fract2ArrayInit(Fract2Array *array);
+
+void FractAdd(Fract fract1, Fract fract2);
 
 void PrintFract(Fract fract);
 
