@@ -8,5 +8,9 @@ int main(int argc, char *argv[]) {
 	ShowFract2Array(&result_array);
 	DoubleaToFracta2(fac_array, con_fac_array);
 	ShowFract2Array(&con_fac_array);
+	Fract f1 = {1, 12};
+	Fract f2 = {2, 16};
+	Fract result = FractAdd(f1, f2);
+	PrintFract(result);
 	return 0;
 }

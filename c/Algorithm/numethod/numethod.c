@@ -31,6 +31,40 @@ void PrintFract(Fract fract) {
 	printf("%2d/%d ", fract.num, fract.deno);
 }
 
+// define common multiple func
+int CommonMulti(int a, int b) {
+	if (a != 1 && b != 1) {
+		if (a == b) return a;
+		int max = MAX(a,b);
+		int min = max ^ (a ^ b);
+		if (max % min == 0) return max;
+		// both are odd number
+		if ((a & 1) == 1 && (b & 1) == 1) return a * b;
+		// both are even number
+		if ((a & 1) == 0 && (b & 1) == 0) {
+			for (int i=1; i<min; ++i) {
+				if ((max * i) % min == 0) return max * i;
+			}
+		}
+		return a * b;
+	}
+	return 1;
+}
+
+// define fract add func
+Fract FractAdd(Fract f1, Fract f2) {
+	Fract result;
+	int common_deno = CommonMulti(f1.deno, f2.deno);
+	if (common_deno == 1) {
+		result.deno = 1;	
+		result.num = f1.num + f2.num;
+		return result;
+	}
+	result.deno = common_deno;	
+	result.num = f1.num * (common_deno/f1.deno) + f2.num * (common_deno / f2.deno);
+	return result;
+}
+
 // define Fract2array init func
 void Fract2ArrayInit(Fract2Array *array) {
 	for (int i=0; i<ROW; ++i) {
@@ -44,8 +78,8 @@ void Fract2ArrayInit(Fract2Array *array) {
 // define one-demonid int array to fractarray func
 void DoubleaToFract_one(double oarray[ROW], FractArray farray) {
 	for (int i=0; i<ROW; ++i) {
-		farry[i].num = oarray[i];
-		farry[i].deno = 1;
+		farray[i].num = oarray[i];
+		farray[i].deno = 1;
 	}
 }
 
@@ -57,13 +91,6 @@ void DoubleaToFracta2(double darray[ROW][COL], Fract2Array farray) {
 			farray[i][j].deno = 1;
 		}
 	}	
-}
-
-// define fract add func
-void FractAdd(Fract fract1, Fract fract2) {
-	if (fract1.deno == 1 && fract2.deno == 1) {
-		return;	
-	}
 }
 
 // define Gauss func
