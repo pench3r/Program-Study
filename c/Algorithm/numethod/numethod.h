@@ -19,12 +19,22 @@ typedef Fract FractArray[ROW];
 typedef Fract Fract2Array[ROW][COL];
 
 /* struct fract arithmetical
-   include: add, multi, sub
+   include: add, multi, div
 */
 Fract FractAdd(Fract f1, Fract f2);
 
+Fract FractMul(Fract f1, Fract f2);
+
+Fract FractDiv(Fract f1, Fract f2);
+
 /* common multiple func */
 int CommonMulti(int a, int b);
+
+/* common divisor func */
+int CommonDivisor(int a, int b);
+
+/* simplify fract func */
+// Fract FractSimplify(Fract f1);
 
 void DoubleaToFracta_one(double oarray[ROW][COL], FractArray farray);
 

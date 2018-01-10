@@ -51,6 +51,24 @@ int CommonMulti(int a, int b) {
 	return 1;
 }
 
+// define common divisor func
+int CommonDivisor(int a, int b) {
+	int max = MAX(a,b);
+	int min = max ^ (a ^ b);
+	int mod = max % min;
+	while ( mod != 0) {
+		max = min;
+		min = mod;
+		mod = max % min;
+	}
+	return min;
+}
+
+// define fract simplify func
+// Fract FractSimplify(Fract f1) {
+// 	
+// }
+
 // define fract add func
 Fract FractAdd(Fract f1, Fract f2) {
 	Fract result;
@@ -62,6 +80,22 @@ Fract FractAdd(Fract f1, Fract f2) {
 	}
 	result.deno = common_deno;	
 	result.num = f1.num * (common_deno/f1.deno) + f2.num * (common_deno / f2.deno);
+	return result;
+}
+
+// define fract mult func
+Fract FractMul(Fract f1, Fract f2) {
+	Fract result;
+	result.num = f1.num * f2.num;
+	result.deno = f1.deno * f2.deno;
+	return result;
+}
+
+// define fract div func
+Fract FractDiv(Fract f1, Fract f2) {
+	Fract result;
+	result.num = f1.num * f2.deno;
+	result.deno = f1.deno * f2.num;	
 	return result;
 }
 
@@ -96,10 +130,10 @@ void DoubleaToFracta2(double darray[ROW][COL], Fract2Array farray) {
 // define Gauss func
 void Gauss(double fac_array[ROW][COL], double con_array[ROW], double (*result_array)[ROW]) { 
 	// find max abs(value) in first col, row = 1 	
+// 	row = 0;
+// 	col = 0;
 // 	while(row < ROW && col < COL) {
-// 		row = 0
-// 		max_row = 0;
-// 		col = 0
+//		max_row = row;
 // 		for (int i=row+1; i<ROW; ++i) {
 // 			if (abs(fac_array[i][col]) > abs(fac_array[max_row][col])) {
 // 				max_row = i;

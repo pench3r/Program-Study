@@ -11,6 +11,10 @@ int main(int argc, char *argv[]) {
 	Fract f1 = {1, 12};
 	Fract f2 = {2, 16};
 	Fract result = FractAdd(f1, f2);
+	Fract result1 = FractMul(f1, f2);
 	PrintFract(result);
+	PrintFract(result1);
+	int retval = CommonDivisor(30, 15);
+	printf("The data is %d.\n", retval);
 	return 0;
 }
