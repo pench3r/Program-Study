@@ -34,3 +34,6 @@
 # debug
 *.gdb_history
 *.swap
+
+# cmake build dir
+*/build/
