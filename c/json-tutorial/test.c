@@ -1,10 +1,32 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "ljson.h"
 
+static int test_count = 0;
+static int test_pass = 0;
+
+#define EXPECT_EQ_BASE(equality, expect, actual, format) \
+	do {\
+		test_count++;\
+		if (equality)\
+			test_pass++;\
+		else {\
+			fprintf(stderr, "%s:%d: expect: " format " actual: " format "\n", __FILE__, __LINE__, expect, actual);\
+		}\
+	} while(0)
+
+#define EXPECT_EQ_INT(expect, actual) EXPECT_EQ_BASE(((expect) == (actual)), expect, actual, "%d ")
+
+void test_parse() {
+	EXPECT_EQ_INT(1, 2);	
+	EXPECT_EQ_INT(2, 2);	
+	EXPECT_EQ_INT(3, 2);	
+	EXPECT_EQ_INT(3, 3);	
+}
+
 int main(int argc, char *argv[]) {
-	lj_value value_t;
-	char json[] = "This is test";
-	lj_parse(&value_t, json);
-	int retval = lj_get_type(&value_t); 
-	printf("The result is %d.\n", retval);	
+	test_parse();
+	printf("test: %d/%d,  (%3.2f%%) passed\n", test_pass, test_count, test_pass*100.0 / test_count);	
 	return 0;
 }
