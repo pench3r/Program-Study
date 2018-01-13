@@ -25,6 +25,6 @@ int lj_parse(lj_value *v, const char *json);
 lj_type lj_get_type(const lj_value *v);
 
 /* struct json get value func */
-int lj_parse_value(lj_context *context);
+int lj_parse_value(lj_context *context, lj_value *value);
 
 #endif /* LJSON_H__ */

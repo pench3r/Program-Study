@@ -20,11 +20,9 @@ static int test_pass = 0;
 
 void test_parse_null() {
 	lj_value value;
-	value.type = LJ_NULL;
+	value.type = LJ_FALSE;
 	EXPECT_EQ_INT(LJ_PARSE_OK, lj_parse(&value, "null"));
-	EXPECT_EQ_INT(LJ_PARSE_OK, lj_parse(&value, "null2"));
-	EXPECT_EQ_INT(LJ_PARSE_OK, lj_parse(&value, "null "));
-	EXPECT_EQ_INT(LJ_PARSE_OK, lj_parse(&value, " null"));
+	EXPECT_EQ_INT(LJ_NULL, lj_get_type(&value));
 }
 
 void test_parse() {
