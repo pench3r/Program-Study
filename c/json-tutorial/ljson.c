@@ -2,7 +2,15 @@
 
 // define ljson parse func
 int lj_parse(lj_value *v, const char *json) {
-	return 1;
+	lj_context context;
+	context.json = json;
+	return lj_parse_value(&context);	
+}
+
+// define ljson parse value func
+int lj_parse_value(lj_context *context) {
+	if (context->json[0] != 'n' || context->json[1] != 'u' || context->json[2] != 'l' || context->json[3] != 'l' || context->json[4] != '\0') return LJ_PARSE_INVALID_VALUE;
+	return LJ_PARSE_OK;
 }
 
 // define ljson get type func

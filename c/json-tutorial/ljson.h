@@ -14,10 +14,17 @@ typedef struct _lj_value {
 	lj_type type;
 } lj_value;
 
+typedef struct _lj_context {
+	const char *json;
+} lj_context;
+
 /* struct json parse func */
 int lj_parse(lj_value *v, const char *json);
 
 /* struct json get type func */
 lj_type lj_get_type(const lj_value *v);
+
+/* struct json get value func */
+int lj_parse_value(lj_context *context);
 
 #endif /* LJSON_H__ */

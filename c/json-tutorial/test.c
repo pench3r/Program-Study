@@ -18,6 +18,15 @@ static int test_pass = 0;
 
 #define EXPECT_EQ_INT(expect, actual) EXPECT_EQ_BASE(((expect) == (actual)), expect, actual, "%d ")
 
+void test_parse_null() {
+	lj_value value;
+	value.type = LJ_NULL;
+	EXPECT_EQ_INT(LJ_PARSE_OK, lj_parse(&value, "null"));
+	EXPECT_EQ_INT(LJ_PARSE_OK, lj_parse(&value, "null2"));
+	EXPECT_EQ_INT(LJ_PARSE_OK, lj_parse(&value, "null "));
+	EXPECT_EQ_INT(LJ_PARSE_OK, lj_parse(&value, " null"));
+}
+
 void test_parse() {
 	EXPECT_EQ_INT(1, 2);	
 	EXPECT_EQ_INT(2, 2);	
@@ -26,7 +35,7 @@ void test_parse() {
 }
 
 int main(int argc, char *argv[]) {
-	test_parse();
+	test_parse_null();
 	printf("test: %d/%d,  (%3.2f%%) passed\n", test_pass, test_count, test_pass*100.0 / test_count);	
 	return 0;
 }
