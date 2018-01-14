@@ -25,6 +25,13 @@ void test_parse_null() {
 	EXPECT_EQ_INT(LJ_NULL, lj_get_type(&value));
 }
 
+void test_parse_expect_value() {
+	lj_value value;
+	value.type = LJ_FALSE;
+	EXPECT_EQ_INT(LJ_PARSE_EXPECT_VALUE, lj_parse(&value, ""));
+	EXPECT_EQ_INT(LJ_NULL, lj_get_type(&value));
+}
+
 void test_parse() {
 	EXPECT_EQ_INT(1, 2);	
 	EXPECT_EQ_INT(2, 2);	
@@ -34,6 +41,7 @@ void test_parse() {
 
 int main(int argc, char *argv[]) {
 	test_parse_null();
+	test_parse_expect_value();
 	printf("test: %d/%d,  (%3.2f%%) passed\n", test_pass, test_count, test_pass*100.0 / test_count);	
 	return 0;
 }
