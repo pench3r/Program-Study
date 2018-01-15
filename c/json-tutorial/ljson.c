@@ -4,6 +4,7 @@
 lj_parse_result lj_parse(lj_value *v, const char *json) {
 	lj_context context;
 	context.json = json;
+	v->type = LJ_NULL;
 	lj_parse_whitespace(&context);
 	return lj_parse_value(&context, v);	
 }
@@ -15,10 +16,32 @@ lj_parse_result lj_parse_null(lj_context *context, lj_value *v) {
 	return LJ_PARSE_OK;
 }
 
+// define ljson parse true func
+lj_parse_result lj_parse_true(lj_context *context, lj_value *v) {
+	if (context->json[0] != 't' || context->json[1] != 'r' || context->json[2] != 'u' || context->json[3] != 'e' || context->json[4] != '\0') return LJ_PARSE_INVALID_VALUE;
+	v->type = LJ_TRUE;
+	return LJ_PARSE_OK;
+}
+
+// define ljson parse false func
+lj_parse_result lj_parse_false(lj_context *context, lj_value *v) {
+	if (context->json[0] != 'f' || context->json[1] != 'a' || context->json[2] != 'l' || context->json[3] != 's' || context->json[4] != 'e' || context->json[5] != '\0') return LJ_PARSE_INVALID_VALUE;
+	v->type = LJ_FALSE;
+	return LJ_PARSE_OK;
+} 
+
 // define ljson parse value func
 int lj_parse_value(lj_context *context, lj_value *v) {
+	const char *tmp_json = context->json;
+	while ( *tmp_json != ' ' && *tmp_json != '\t' && *tmp_json != '\r' && *tmp_json != '\n' && *tmp_json != '\0')
+		tmp_json++;
+	while ( *tmp_json == ' ' || *tmp_json == '\t' || *tmp_json == '\r' || *tmp_json == '\n')	
+		tmp_json++;
+	if ( *tmp_json != '\0') return LJ_PARSE_ROOT_NOT_SINGULAR;
 	switch(*context->json) {
+		case 'f': return lj_parse_false(context, v);
 		case 'n': return lj_parse_null(context, v);
+		case 't': return lj_parse_true(context, v);
 		case '\0': return LJ_PARSE_EXPECT_VALUE;
 		default: return LJ_PARSE_INVALID_VALUE;
 	}

@@ -35,4 +35,10 @@ void lj_parse_whitespace(lj_context *context);
 /* struct json null type parse func */
 lj_parse_result lj_parse_null(lj_context *context, lj_value *value);
 
+/* struct json true type parse func */
+lj_parse_result lj_parse_true(lj_context *context, lj_value *value);
+
+/* struct json false type parse func */
+lj_parse_result lj_parse_false(lj_context *context, lj_value *value);
+
 #endif /* LJSON_H__ */
