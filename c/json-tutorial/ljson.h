@@ -41,4 +41,7 @@ lj_parse_result lj_parse_true(lj_context *context, lj_value *value);
 /* struct json false type parse func */
 lj_parse_result lj_parse_false(lj_context *context, lj_value *value);
 
+/* struct json literal parse func */
+lj_parse_result lj_parse_literal(lj_context *context, lj_value *value, const char *literal_str, lj_type literal_type);
+
 #endif /* LJSON_H__ */

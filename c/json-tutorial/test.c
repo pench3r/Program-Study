@@ -18,54 +18,38 @@ static int test_pass = 0;
 
 #define EXPECT_EQ_INT(expect, actual) EXPECT_EQ_BASE(((expect) == (actual)), expect, actual, "%d ")
 
+#define TEST_PARSE_BASIC(parse_result, literal_str, literal_type) \
+	do {\
+		lj_value value;\
+		value.type = LJ_FALSE;\
+		EXPECT_EQ_INT(parse_result, lj_parse(&value, literal_str));\
+		EXPECT_EQ_INT(literal_type, lj_get_type(&value));\
+	} while(0) 
+
 static void test_parse_null() {
-	lj_value value;
-	value.type = LJ_FALSE;
-	EXPECT_EQ_INT(LJ_PARSE_OK, lj_parse(&value, "null"));
-	EXPECT_EQ_INT(LJ_NULL, lj_get_type(&value));
+	TEST_PARSE_BASIC(LJ_PARSE_OK, "null", LJ_NULL);
 }
 
 static void test_parse_true() {
-	lj_value value;
-	value.type = LJ_FALSE;
-	EXPECT_EQ_INT(LJ_PARSE_OK, lj_parse(&value, "true"));
-	EXPECT_EQ_INT(LJ_TRUE, lj_get_type(&value));
+	TEST_PARSE_BASIC(LJ_PARSE_OK, "true", LJ_TRUE);
 }
 
 static void test_parse_false() {
-	lj_value value;
-	value.type = LJ_FALSE;
-	EXPECT_EQ_INT(LJ_PARSE_OK, lj_parse(&value, "false"));
-	EXPECT_EQ_INT(LJ_FALSE, lj_get_type(&value));
+	TEST_PARSE_BASIC(LJ_PARSE_OK, "false", LJ_FALSE);
 }
 
 static void test_parse_expect_value() {
-	lj_value value;
-	value.type = LJ_FALSE;
-	EXPECT_EQ_INT(LJ_PARSE_EXPECT_VALUE, lj_parse(&value, ""));
-	EXPECT_EQ_INT(LJ_NULL, lj_get_type(&value));
-
-	value.type = LJ_FALSE;
-	EXPECT_EQ_INT(LJ_PARSE_EXPECT_VALUE, lj_parse(&value, " "));
-	EXPECT_EQ_INT(LJ_NULL, lj_get_type(&value));
+	TEST_PARSE_BASIC(LJ_PARSE_EXPECT_VALUE, "", LJ_NULL);
+	TEST_PARSE_BASIC(LJ_PARSE_EXPECT_VALUE, " ", LJ_NULL);
 }
 
 static void test_parse_invalid_value(){
-	lj_value value;
-	value.type = LJ_FALSE;
-	EXPECT_EQ_INT(LJ_PARSE_INVALID_VALUE, lj_parse(&value, "nul"));
-	EXPECT_EQ_INT(LJ_NULL, lj_get_type(&value));
-
-	value.type = LJ_FALSE;
-	EXPECT_EQ_INT(LJ_PARSE_INVALID_VALUE, lj_parse(&value, "?"));
-	EXPECT_EQ_INT(LJ_NULL, lj_get_type(&value));
+	TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, "nul", LJ_NULL);
+	TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, "?", LJ_NULL);
 }
 
 static void test_parse_root_not_singular() {
-	lj_value value;
-	value.type = LJ_FALSE;
-	EXPECT_EQ_INT(LJ_PARSE_ROOT_NOT_SINGULAR, lj_parse(&value, "null x"));
-	EXPECT_EQ_INT(LJ_NULL, lj_get_type(&value));
+	TEST_PARSE_BASIC(LJ_PARSE_ROOT_NOT_SINGULAR, "null x", LJ_NULL);
 }
 
 static void test_parse() {

@@ -9,6 +9,21 @@ lj_parse_result lj_parse(lj_value *v, const char *json) {
 	return lj_parse_value(&context, v);	
 }
 
+// define ljson parse literal func
+lj_parse_result lj_parse_literal(lj_context *context, lj_value *v, const char *literal_str, lj_type literal_type) {
+	int literal_str_len = 0;
+	const char *tmp_str = literal_str;
+	while (*tmp_str != '\0') {
+		tmp_str++;
+		literal_str_len++;
+	}
+	for (int str_index=0; str_index < literal_str_len+1; ++str_index) {
+		if (*(context->json+str_index) != *(literal_str+str_index)) return LJ_PARSE_INVALID_VALUE;
+	}
+	v->type = literal_type;
+	return LJ_PARSE_OK;
+}
+
 // define ljson parse null func
 lj_parse_result lj_parse_null(lj_context *context, lj_value *v) {
 	if (context->json[0] != 'n' || context->json[1] != 'u' || context->json[2] != 'l' || context->json[3] != 'l' || context->json[4] != '\0') return LJ_PARSE_INVALID_VALUE;
@@ -39,9 +54,9 @@ int lj_parse_value(lj_context *context, lj_value *v) {
 		tmp_json++;
 	if ( *tmp_json != '\0') return LJ_PARSE_ROOT_NOT_SINGULAR;
 	switch(*context->json) {
-		case 'f': return lj_parse_false(context, v);
-		case 'n': return lj_parse_null(context, v);
-		case 't': return lj_parse_true(context, v);
+		case 'f': return lj_parse_literal(context, v, "false", LJ_FALSE);
+		case 'n': return lj_parse_literal(context, v, "null", LJ_NULL);
+		case 't': return lj_parse_literal(context, v, "true", LJ_TRUE);
 		case '\0': return LJ_PARSE_EXPECT_VALUE;
 		default: return LJ_PARSE_INVALID_VALUE;
 	}
