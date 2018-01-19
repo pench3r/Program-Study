@@ -11,6 +11,7 @@ typedef enum {
 } lj_parse_result;
 
 typedef struct _lj_value {
+	double lj_number;
 	lj_type type;
 } lj_value;
 
@@ -25,6 +26,9 @@ lj_parse_result lj_parse(lj_value *v, const char *json);
 
 /* struct json get type func */
 lj_type lj_get_type(const lj_value *v);
+
+/* struct json get number if exists func */
+double lj_get_number(const lj_value *v);
 
 /* struct json get value func */
 int lj_parse_value(lj_context *context, lj_value *value);
@@ -43,5 +47,8 @@ lj_parse_result lj_parse_false(lj_context *context, lj_value *value);
 
 /* struct json literal parse func */
 lj_parse_result lj_parse_literal(lj_context *context, lj_value *value, const char *literal_str, lj_type literal_type);
+
+/* struct json number parse func */
+lj_parse_result lj_parse_number(lj_context *context, lj_value *value);
 
 #endif /* LJSON_H__ */
