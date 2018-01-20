@@ -49,6 +49,15 @@ lj_parse_result lj_parse_false(lj_context *context, lj_value *v) {
 } 
 
 // define ljson parse number func
+lj_parse_result lj_parse_number_p(lj_context *context, lj_value *value) {
+	char *end;
+	value->lj_number = strtod(context->json, &end);
+	if (context->json == end) return LJ_PARSE_INVALID_VALUE;
+	value->type = LJ_NUMBER;
+	return LJ_PARSE_OK;
+}
+
+// define ljson parse number func personal version
 lj_parse_result lj_parse_number(lj_context *context, lj_value *value) {
 	const char *tmp_json = context->json;
 	char *final_json;
@@ -59,7 +68,12 @@ lj_parse_result lj_parse_number(lj_context *context, lj_value *value) {
 		value->type = LJ_NUMBER;
 		return LJ_PARSE_OK;		
 	}
-	if (*tmp_json == '0' && *(tmp_json+1) != '\0') return LJ_PARSE_INVALID_VALUE;		
+	if (*tmp_json == '0' && *(tmp_json+1) == '.' && *(tmp_json+2) == '0') {
+		value->lj_number = 0.0;
+		value->type = LJ_NUMBER;
+		return LJ_PARSE_OK;	
+	}
+	if (*tmp_json == '0' && *(tmp_json+1) != '\0') return LJ_PARSE_ROOT_NOT_SINGULAR;		
 	if (*tmp_json < 0x30 || *tmp_json > 0x39) return LJ_PARSE_INVALID_VALUE;
 	while (*tmp_json >= 0x30 && *tmp_json <= 0x39)
 		tmp_json++;

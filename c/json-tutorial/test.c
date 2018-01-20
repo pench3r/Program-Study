@@ -37,12 +37,25 @@ static int test_pass = 0;
 	} while(0)
 
 static void test_parse_number() {
-	TEST_PARSE_NUMBER(1e10, "1e10");
-	TEST_PARSE_NUMBER(1E10, "1e10");
-	TEST_PARSE_NUMBER(-1E+10, "-1e+10");
-	TEST_PARSE_NUMBER(-1e-10, "-1E-10");
-	TEST_PARSE_NUMBER(1.234E+10, "1.234E+10");
-	TEST_PARSE_NUMBER(1.234E-10, "1.234E-10");
+    TEST_PARSE_NUMBER(0.0, "0");
+    TEST_PARSE_NUMBER(0.0, "-0");
+    TEST_PARSE_NUMBER(0.0, "-0.0");
+    TEST_PARSE_NUMBER(1.0, "1");
+    TEST_PARSE_NUMBER(-1.0, "-1");
+    TEST_PARSE_NUMBER(1.5, "1.5");
+    TEST_PARSE_NUMBER(-1.5, "-1.5");
+    TEST_PARSE_NUMBER(3.1416, "3.1416");
+    TEST_PARSE_NUMBER(1E10, "1E10");
+    TEST_PARSE_NUMBER(1e10, "1e10");
+    TEST_PARSE_NUMBER(1E+10, "1E+10");
+    TEST_PARSE_NUMBER(1E-10, "1E-10");
+    TEST_PARSE_NUMBER(-1E10, "-1E10");
+    TEST_PARSE_NUMBER(-1e10, "-1e10");
+    TEST_PARSE_NUMBER(-1E+10, "-1E+10");
+    TEST_PARSE_NUMBER(-1E-10, "-1E-10");
+    TEST_PARSE_NUMBER(1.234E+10, "1.234E+10");
+    TEST_PARSE_NUMBER(1.234E-10, "1.234E-10");
+    TEST_PARSE_NUMBER(0.0, "1e-10000"); /* must underflow */
 }
 
 static void test_parse_null() {
@@ -65,10 +78,30 @@ static void test_parse_expect_value() {
 static void test_parse_invalid_value(){
 	TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, "nul", LJ_NULL);
 	TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, "?", LJ_NULL);
+
+#if 1
+    /* invalid number */
+    TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, "+0", LJ_NULL);
+    TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, "+1", LJ_NULL);
+    TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, ".123", LJ_NULL); /* at least one digit before '.' */
+    TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, "1.", LJ_NULL);   /* at least one digit after '.' */
+    TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, "INF", LJ_NULL);
+    TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, "inf", LJ_NULL);
+    TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, "NAN", LJ_NULL);
+    TEST_PARSE_BASIC(LJ_PARSE_INVALID_VALUE, "nan", LJ_NULL);
+#endif
 }
 
 static void test_parse_root_not_singular() {
 	TEST_PARSE_BASIC(LJ_PARSE_ROOT_NOT_SINGULAR, "null x", LJ_NULL);
+
+
+#if 1
+    /* invalid number */
+    TEST_PARSE_BASIC(LJ_PARSE_ROOT_NOT_SINGULAR, "0123", LJ_NULL); /* after zero should be '.' or nothing */
+    TEST_PARSE_BASIC(LJ_PARSE_ROOT_NOT_SINGULAR, "0x0", LJ_NULL);
+    TEST_PARSE_BASIC(LJ_PARSE_ROOT_NOT_SINGULAR, "0x123", LJ_NULL);
+#endif
 }
 
 static void test_parse() {
