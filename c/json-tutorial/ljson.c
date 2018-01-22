@@ -49,7 +49,37 @@ lj_parse_result lj_parse_false(lj_context *context, lj_value *v) {
 } 
 
 // define ljson parse number func
-lj_parse_result lj_parse_number_p(lj_context *context, lj_value *value) {
+lj_parse_result lj_parse_number(lj_context *context, lj_value *value) {
+	const char *tmp_json = context->json;
+	/* negative */
+	if (*tmp_json == '-') tmp_json++;
+	/* int */
+	if (*tmp_json == '0') {
+		tmp_json++;
+		if (*tmp_json != '\0' && *tmp_json != '.') return LJ_PARSE_ROOT_NOT_SINGULAR;			
+	} 
+	else {
+		/* not 1-9 */
+		if (*tmp_json < 0x31 || *tmp_json > 0x39) return LJ_PARSE_INVALID_VALUE;
+		/* skip 0-9 */
+		while (*tmp_json >= 0x30 && *tmp_json <= 0x39)
+			tmp_json++;
+	}
+	/* fract */
+	if (*tmp_json == '.') {
+		tmp_json++;
+		if (*tmp_json < 0x30 || *tmp_json > 0x39) return LJ_PARSE_INVALID_VALUE;
+		while (*tmp_json >= 0x30 && *tmp_json <= 0x39)
+			tmp_json++;
+	}
+	/* indexs */
+	if (*tmp_json == 'e' || *tmp_json == 'E') {
+		tmp_json++;
+		if (*tmp_json == '+' || *tmp_json == '-') tmp_json++;
+		if (*tmp_json < 0x30 || *tmp_json > 0x39) return LJ_PARSE_INVALID_VALUE;
+		while (*tmp_json >= 0x30 && *tmp_json <= 0x39)
+			tmp_json++;
+	}
 	char *end;
 	value->lj_number = strtod(context->json, &end);
 	if (context->json == end) return LJ_PARSE_INVALID_VALUE;
@@ -58,7 +88,7 @@ lj_parse_result lj_parse_number_p(lj_context *context, lj_value *value) {
 }
 
 // define ljson parse number func personal version
-lj_parse_result lj_parse_number(lj_context *context, lj_value *value) {
+lj_parse_result lj_parse_number_m(lj_context *context, lj_value *value) {
 	const char *tmp_json = context->json;
 	char *final_json;
 	if (*tmp_json != '-' && (*tmp_json < 0x30 || *tmp_json > 0x39)) return LJ_PARSE_INVALID_VALUE;
