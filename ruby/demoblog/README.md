@@ -1,8 +1,10 @@
 ### screenshot
 
+Index:
 ![image1](https://github.com/pench3r/Program-Study/blob/master/ruby/demoblog/image1.png)
 
-![image2](https://github.com/pench3r/Program-Study/blob/master/ruby/demoblog/image1.png)
+Post:
+![image2](https://github.com/pench3r/Program-Study/blob/master/ruby/demoblog/image2.png)
 
 # README
 
