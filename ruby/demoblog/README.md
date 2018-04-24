@@ -21,4 +21,9 @@ Things you may want to cover:
 
 * Deployment instructions
 
-* ...
+### screenshot
+
+[!image1](https://github.com/pench3r/Program-Study/raw/master/ruby/demoblog/image_1.png)
+
+[!image2](https://github.com/pench3r/Program-Study/raw/master/ruby/demoblog/image_2.png)
+
