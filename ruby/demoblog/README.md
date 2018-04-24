@@ -1,8 +1,8 @@
 ### screenshot
 
-![image1](https://github.com/pench3r/Program-Study/raw/master/ruby/demoblog/image_1.png)
+![image1](https://github.com/pench3r/Program-Study/blob/master/ruby/demoblog/image_1.png)
 
-![image2](https://github.com/pench3r/Program-Study/raw/master/ruby/demoblog/image_2.png)
+![image2](https://github.com/pench3r/Program-Study/blob/master/ruby/demoblog/image_2.png)
 
 # README
 
