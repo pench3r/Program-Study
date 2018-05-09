@@ -57,6 +57,8 @@ HTA（HTML Application)，可以嵌入`JScript`和`VBScript`，后缀名为`.hta
 	rundll32 url.dll, OpenURLA file://c:\windows\system32\calc.exe
 
 	rundll32 url.dll, FileProtocolHandler calc.exe
+	
+	rundll32 C:\Windows\system32\shell32.dll,OpenAs_RunDLL C:\ProgramData\x64.1
 
 修改注册表项
 
