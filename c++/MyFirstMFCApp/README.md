@@ -1,6 +1,6 @@
 ### Simple Process explore ###
 
-使用MFC写的一个小项目
+使用MFC写的一个小工具
 
 ### todolist:
 
