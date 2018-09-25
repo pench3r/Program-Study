@@ -16,6 +16,10 @@
 - 通过计时器定时更新进程列表
 - 挂起、结束、恢复进程
 
+### 遇到的一些坑:
+
+- 使用EnumProcessModules和createToolhelp32Snapshot在获取Modules时，出现错误299,查明原因是因为程序为32位但是在64位系统上运行所导致的，后续修改生成的程序版本即可修复此bug
+
 screenshoot:
 
 ![i](https://github.com/pench3r/Program-Study/blob/master/c%2B%2B/MyFirstMFCApp/image1.png)
