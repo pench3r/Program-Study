@@ -33,6 +33,9 @@
     <ClInclude Include="ShowDllDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CMyListCtrlEx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyFirstMFCApp.cpp">
@@ -45,6 +48,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ShowDllDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CMyListCtrlEx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

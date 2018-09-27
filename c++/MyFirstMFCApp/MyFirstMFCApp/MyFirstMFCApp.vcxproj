@@ -183,6 +183,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CMyListCtrlEx.h" />
     <ClInclude Include="MyFirstMFCApp.h" />
     <ClInclude Include="MyFirstMFCAppDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -191,6 +192,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CMyListCtrlEx.cpp" />
     <ClCompile Include="MyFirstMFCApp.cpp" />
     <ClCompile Include="MyFirstMFCAppDlg.cpp" />
     <ClCompile Include="ShowDllDlg.cpp" />
