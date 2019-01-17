@@ -179,3 +179,5 @@ http://vps/a 为通过msfvenom生成payload
 install metasploit：
 
 	curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && chmod 755 msfinstall && ./msfinstall
+	
+参考文章： https://hk.saowen.com/a/adb601c29ea6b600e0ee88dc77f4df6f1d3cddfc59fca3bc05f86c6ab9c96d17
