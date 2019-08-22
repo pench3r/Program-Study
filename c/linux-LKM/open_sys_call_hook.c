@@ -1,13 +1,14 @@
 #include <linux/kernel.h>
 #include <linux/syscalls.h>
 #include <linux/module.h>
+#include <linux/delay.h>
 
 MODULE_LICENSE("GPL");
 
 unsigned long **real_sys_call_table;
 asmlinkage long (*real_open)(const char __user *, int, umode_t);
 asmlinkage long fake_open(const char __user *filename, int flag, umode_t mode) {
-	if ( (flag & O_CREAT) && strcmp(filename, "/dev/null") != 0) {
+	if (flag & O_CREAT) {
 		printk(KERN_INFO "Open file %s.\n", filename);
 	}
 	return real_open(filename, flag, mode);
@@ -26,12 +27,16 @@ static void enable_write_protect(void) {
 }
 
 static unsigned long **find_sys_call_table(void) {
-	unsigned long **entry = (unsigned long **)PAGE_OFFSET;
-	for (; (unsigned long)entry < ULONG_MAX; entry += 1) {
-		if (entry[__NR_close] == (unsigned long *)sys_close)
-			return entry;
-	}
-	return NULL;
+    unsigned long ptr;
+    unsigned long *p;
+    for (ptr = (unsigned long)sys_close;
+         ptr < (unsigned long)&loops_per_jiffy;
+         ptr += sizeof(void *)) {
+        p = (unsigned long *)ptr;
+        if (p[__NR_close] == (unsigned long)sys_close)
+            return (unsigned long **)p;
+    }
+    return NULL;
 }
 
 static int __init sys_call_hook_init(void) {
