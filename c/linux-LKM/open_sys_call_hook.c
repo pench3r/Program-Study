@@ -40,12 +40,15 @@ static void set_addr_ro(unsigned long _addr)
 
 
 unsigned long *real_sys_call_table;
-typeof(sys_open) *real_open;
-asmlinkage long fake_open(const char __user *filename, int flag, umode_t mode) {
-	if (flag & O_CREAT) {
-		printk(KERN_INFO "Open file %s.\n", filename);
-	}
-	return real_open(filename, flag, mode);
+typeof(sys_read) *real_read;
+asmlinkage long my_read(int fd, char __user *buf, size_t count)
+{
+	unsigned char kbuf[32];
+
+	printk(KERN_INFO "read fd: %d.\n", fd);
+
+	/* Call the original syscall */
+	return real_read(fd, buf, count);
 }
 
 
@@ -67,17 +70,17 @@ static int __init sys_call_hook_init(void) {
 	// real_sys_call_table = find_sys_call_table();	
 	real_sys_call_table = (void *)kallsyms_lookup_name("sys_call_table");
 	printk(KERN_INFO "The system call table address is %p.\n", real_sys_call_table); 
-	real_open = (typeof(sys_open) *)real_sys_call_table[__NR_open];
+	real_read = (typeof(sys_read) *)real_sys_call_table[__NR_read];
 	
 	set_addr_rw((unsigned long)real_sys_call_table);
-	SMP_UPDATE({real_sys_call_table[__NR_open] = (void *)&fake_open;});
+	SMP_UPDATE({real_sys_call_table[__NR_read] = (void *)&my_read;});
 
 
 	return 0;
 }
 
 static void __exit sys_call_hook_exit(void) {
-	SMP_UPDATE({real_sys_call_table[__NR_open] = (void *)real_open;});
+	SMP_UPDATE({real_sys_call_table[__NR_read] = (void *)real_read;});
 	set_addr_ro((unsigned long)real_sys_call_table);
 	printk(KERN_INFO "Remove hook...\n");
 }
