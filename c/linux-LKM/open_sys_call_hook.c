@@ -77,7 +77,7 @@ static int __init sys_call_hook_init(void) {
 }
 
 static void __exit sys_call_hook_exit(void) {
-	SMP_UPDATE({sys_call_table[__NR_open] = (void *)real_open;});
+	SMP_UPDATE({real_sys_call_table[__NR_open] = (void *)real_open;});
 	set_addr_ro((unsigned long)real_sys_call_table);
 	printk(KERN_INFO "Remove hook...\n");
 }
