@@ -2,6 +2,7 @@
 #include <linux/syscalls.h>
 #include <linux/module.h>
 #include <linux/delay.h>
+#include <linux/kallsyms.h>
 
 MODULE_LICENSE("GPL");
 
@@ -41,7 +42,8 @@ static unsigned long **find_sys_call_table(void) {
 
 static int __init sys_call_hook_init(void) {
 	printk(KERN_INFO "Begin to hijack system call...\n");
-	real_sys_call_table = find_sys_call_table();	
+	// real_sys_call_table = find_sys_call_table();	
+	real_sys_call_table = (void *)kallsyms_lookup_name("sys_call_table");
 	printk(KERN_INFO "The system call table address is %p.\n", real_sys_call_table); 
 
 	disable_write_protect();
