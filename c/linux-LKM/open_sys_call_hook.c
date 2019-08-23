@@ -41,6 +41,18 @@ static void set_addr_ro(unsigned long _addr)
 
 unsigned long *real_sys_call_table;
 typeof(sys_read) *real_read;
+
+asmlinkage long (*real_execve)(const char __user *filename,
+    const char __user *const __user *argv,
+    const char __user *const __user *envp);
+
+asmlinkage long fake_execve(const char __user *filename,
+    const char __user *const __user *argv,
+    const char __user *const __user *envp){
+    printk(KERN_INFO "execve command: %s.\n", filename);
+    return real_execve(filename, argv, envp);
+}
+
 asmlinkage long my_read(int fd, char __user *buf, size_t count)
 {
 	unsigned char kbuf[32];
@@ -70,17 +82,19 @@ static int __init sys_call_hook_init(void) {
 	// real_sys_call_table = find_sys_call_table();	
 	real_sys_call_table = (void *)kallsyms_lookup_name("sys_call_table");
 	printk(KERN_INFO "The system call table address is %p.\n", real_sys_call_table); 
-	real_read = (typeof(sys_read) *)real_sys_call_table[__NR_read];
+	// real_read = (typeof(sys_read) *)real_sys_call_table[__NR_read];
+	real_execve = (void *)real_sys_call_table[__NR_execve];
 	
 	set_addr_rw((unsigned long)real_sys_call_table);
-	SMP_UPDATE({real_sys_call_table[__NR_read] = (void *)&my_read;});
-
+	// SMP_UPDATE({real_sys_call_table[__NR_read] = (void *)&my_read;});
+	SMP_UPDATE({real_sys_call_table[__NR_execve] = (void *)&fake_execve;});
 
 	return 0;
 }
 
 static void __exit sys_call_hook_exit(void) {
-	SMP_UPDATE({real_sys_call_table[__NR_read] = (void *)real_read;});
+	// SMP_UPDATE({real_sys_call_table[__NR_read] = (void *)real_read;});
+	SMP_UPDATE({real_sys_call_table[__NR_execve] = (void *)real_execve;});
 	set_addr_ro((unsigned long)real_sys_call_table);
 	printk(KERN_INFO "Remove hook...\n");
 }
