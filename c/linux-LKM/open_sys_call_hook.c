@@ -52,7 +52,7 @@ asmlinkage long fake_execve(const char __user *filename,
     unsigned char kbuf[255];
     unsigned long filename_len = strnlen_user(filename, 255);
     copy_from_user(kbuf, filename, filename_len);
-    printk(KERN_INFO "execve command: %s.\n", );
+    printk(KERN_INFO "execve command: %s.\n", kbuf);
     return real_execve(filename, argv, envp);
 }
 
