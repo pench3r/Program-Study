@@ -1,6 +1,8 @@
 #ifndef HTTP_PARSE_REQUEST_H
 #define HTTP_PARSE_REQUEST_H
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define HP_PARSE_ERR -1
 #define HP_PARSE_OK 0

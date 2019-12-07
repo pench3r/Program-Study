@@ -1,13 +1,25 @@
 #include "http_parse_request.h"
 
 
+#define MAX_HEADER_NUM 1024
+
+typedef struct request_header_ {
+	void *rh_key;
+	int rh_key_len;
+	void *rh_val;	
+	int rh_val_len;
+} request_header_t;
+
 typedef struct request_t_ {
 	int start;
 	int end;
 	int state;
 	int recv_bytes;
+	void *rq_uri;
+	int rq_uri_len;
+	request_header_t *headers[MAX_HEADER_NUM];
+	int header_num;
 } request_t;
-
 
 int orgstr1_compare_tarstr2_with_fix_len(void *start, void *target, int len) {
 	for (int i = 0; i<len; ++i) {
@@ -29,8 +41,8 @@ int http_parse_request_first_line(request_t *rt, void *request) {
 		hp_done
 	} state;
 	state = rt->state;
-	char ch;
 	int start = rt->start;
+	char ch;
 	char *cur_pos;
 	for (int end = rt->end; end<rt->recv_bytes; ++end) {
 		cur_pos = request + end;
@@ -66,6 +78,8 @@ int http_parse_request_first_line(request_t *rt, void *request) {
 				return HP_PARSE_ERR;
 			case hp_uri:
 				if (ch == ' ') {
+					rt->rq_uri = request + start;	
+					rt->rq_uri_len = end - start;
 					// save uri start and uri stop
 					state = hp_http;
 					start = end;
@@ -99,18 +113,14 @@ int http_parse_request_first_line(request_t *rt, void *request) {
 			default:
 				return HP_PARSE_ERR;
 		}	
-		end++;
 	}
-	rt->start = 0;
-	rt->end = 0;
-	rt->state = state;
-	return HP_PARSE_AGAIN;
+	return HP_PARSE_ERR;
 }
 
 
 int http_parse_request_header(request_t *rt, void *request) {
 	enum {
-		start = 0,
+		rq_start = 0,
 		rq_header,
 		rq_colon,
 		rq_space,
@@ -119,13 +129,17 @@ int http_parse_request_header(request_t *rt, void *request) {
 	}	state;
 	state = rt->state;
 	char ch;
-	int end = rt->end;
 	char *cur_pos; 
-	while(1) {
+	char *header_key;
+	char *header_val;
+	int header_key_len;
+	int header_val_len;
+	int start = rt->start;
+	for (int end=rt->end; end<rt->recv_bytes; ++end) {
 		cur_pos = request + end;
 		ch = *cur_pos;
 		switch(state) {
-			case start:
+			case rq_start:
 				if (ch > 'A' && ch < 'Z'){
 					state = rq_header;
 					break;	
@@ -135,6 +149,8 @@ int http_parse_request_header(request_t *rt, void *request) {
 				if ((ch > 'A' && ch < 'Z') || (ch > 'a' && ch < 'z') || ch == '-')
 					break;
 				if (ch == ':') {
+					header_key = request + start;
+					header_key_len = end - start;
 					state = rq_colon;
 					break;
 				}
@@ -147,6 +163,7 @@ int http_parse_request_header(request_t *rt, void *request) {
 				return HP_PARSE_ERR;
 			case rq_space:
 				if ((ch > 'A' && ch < 'Z') || (ch >'a' && ch < 'z')) {
+					start = end;
 					state = rq_value;
 					break;
 				}
@@ -154,6 +171,17 @@ int http_parse_request_header(request_t *rt, void *request) {
 			case rq_value:
 				if (ch != '\n')
 					break;
+				header_val = request + start;
+				header_val_len = end - start;
+				request_header_t *header = (request_header_t *)malloc(sizeof(request_header_t));
+				header->rh_key = header_key;
+				header->rh_key_len = header_key_len;
+				header->rh_val = header_val;
+				header->rh_val_len = header_val_len;
+				if (rt->header_num < MAX_HEADER_NUM-1) {
+					rt->headers[rt->header_num] = header;
+					rt->header_num++;
+				}
 				state = rq_value_done;
 				break;
 			case rq_value_done:
@@ -165,12 +193,8 @@ int http_parse_request_header(request_t *rt, void *request) {
 					return HP_PARSE_OK;
 				return HP_PARSE_ERR;
 		}
-		end++;
 	}
-	rt->start = 0;
-	rt->end = 0;
-	rt->state = state;	
-	return HP_PARSE_AGAIN;
+	return HP_PARSE_ERR;
 }
 
 int main(int argc, char *argv[]) {
@@ -178,12 +202,19 @@ int main(int argc, char *argv[]) {
 	rt.state = 0;
 	rt.start = 0;
 	rt.end = 0;
-	char *t = "GET/sss HTTP/1.1\nContent-Type: sxsSS: bb\n";
+	rt.header_num = 0;
+	char *t = "GET /sss HTTP/1.1\nContent-TypesxsSS: bb\n\n";
 	rt.recv_bytes = strlen(t);
 	if (http_parse_request_first_line(&rt,t) == HP_PARSE_OK) {
 		printf("first\n");
 	}
+	printf("uri: %.*s\n", rt.rq_uri_len, (char *)rt.rq_uri);
 	if (http_parse_request_header(&rt, t) == HP_PARSE_OK)
 		printf("HEEEADER\n");
+	request_header_t *header;
+	for (int i=0; i<rt.header_num; ++i) {
+		header = rt.headers[i];
+		printf("header %.*s: %.*s\n", header->rh_key_len, (char *)header->rh_key, header->rh_val_len, (char *)header->rh_val);
+	}
 	return 0;
 }
