@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "thread_pool.h"
-#include "http_request.h"
+#include "parse_http_request.h"
 
 #define MAX_CONN 255
 #define MAX_EPOLL_EVENTS_NUM 64
@@ -43,10 +43,11 @@ int make_socket_non_blocking(int sfd) {
 void* do_process(void* c_hrt) {
 	ssize_t recv_count;
 	http_request_t *c_http_request = (http_request_t *)c_hrt;
+	char FileName[1024] = {0};
 	int start = 0;
 	int end = 0;
 	int parse_state;
-	char *recv_buf = c_http_request->request;
+	char *recv_buf = c_http_request->request_buf;
 	char *msg = "Welcome\n";
 	int cfd = c_http_request->fd;
 	while(1) {
@@ -63,14 +64,31 @@ void* do_process(void* c_hrt) {
 			close(cfd);
 			break;
 		}	
-		// parse_state = http_parse_request_first_line(c_http_request);
-		// parse_header(recv_buf);
-		// parse_body(recv_buf);
-		printf("recv data: %s", recv_buf);
+		c_http_request->recv_bytes = recv_count;
+		if (parse_http_request_first_line(c_http_request) == HP_PARSE_OK) {
+			// printf("uri: %.*s\n", c_http_request->rq_uri_len, (char *)c_http_request->rq_uri); 
+			sprintf(FileName, "%.*s", c_http_request->rq_uri_len, (char *)c_http_request->rq_uri); 
+		}
+		printf("Filename: %s\n", FileName);
+		if (parse_http_request_header(c_http_request) == HP_PARSE_OK) {
+			print_request_header(c_http_request);	
+		}
+		// printf("recv data: %s", recv_buf);
+		chdir("/home/pench3r/www");
+		chroot("/home/pench3r/www");
+		FILE *req_file;
+		req_file=fopen(FileName, "r");
+		char buf[100];
+		while (fgets(buf, sizeof(buf), req_file)) {
+			send(cfd, buf, strlen(buf), 0);
+		}
 		for (int i = 0; i<MAX_BUF; ++i) {
 			recv_buf[i] = '0';
 		}
-		send(cfd, msg, strlen(msg), 0);
+		for (int i = 0; i<1024; ++i) {
+			FileName[i] = '0';
+		}
+		// send(cfd, msg, strlen(msg), 0);
 	}
 }
 
