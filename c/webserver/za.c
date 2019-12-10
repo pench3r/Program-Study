@@ -1,19 +1,25 @@
 #include <stdio.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/epoll.h>
+#include <sys/mman.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/epoll.h>
 #include <stdlib.h>
 #include <errno.h>
+
 #include "thread_pool.h"
 #include "parse_http_request.h"
 
 #define MAX_CONN 255
 #define MAX_EPOLL_EVENTS_NUM 64
+#define WWW_ROOT "/home/pench3r/www"
+#define MAX_FILE_NAME 1024
+#define SERVER_PORT 8888
 
 
 int sfd, epfd;
@@ -24,7 +30,7 @@ int create_and_bind_socket() {
 	listen_fd = socket(AF_INET, SOCK_STREAM, 0);
 	memset(&server_sockaddr, 0, sizeof(server_sockaddr));
 	server_sockaddr.sin_family = AF_INET;
-	server_sockaddr.sin_port = htons(8888);
+	server_sockaddr.sin_port = htons(SERVER_PORT);
 	server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	bind(listen_fd, (const struct sockaddr*)&server_sockaddr, (socklen_t)sizeof(server_sockaddr));	
 	return listen_fd;
@@ -40,16 +46,35 @@ int make_socket_non_blocking(int sfd) {
 }
 
 
-void* do_process(void* c_hrt) {
+int process_http_request_file_out_to_response(http_request_t *hreq, http_response_t *hrsp) {
+	char FileName[MAX_FILE_NAME] = {0};
+	if (hreq->rq_uri_len >= 1024) {
+		perror("uri too long");
+		return -1;
+	}
+	sprintf(FileName, "%.*s", hreq->rq_uri_len, (char *)hreq->rq_uri); 
+	chdir(WWW_ROOT);
+	chroot(WWW_ROOT);
+	printf("filename: %s\n", FileName);
+	struct stat statbuf;
+	int r = stat(FileName, &statbuf);
+	if (r == 0) {
+		int filefd = open(FileName, O_RDONLY, 0);
+		char *fileaddr = mmap(NULL, (size_t)statbuf.st_size, PROT_READ, MAP_PRIVATE, filefd, 0);
+		if (fileaddr != MAP_FAILED) {
+			hrsp->rsp_file_addr = fileaddr;		
+			hrsp->rsp_file_size = (int)statbuf.st_size;
+			return 0;
+		}
+	}
+	return -1;
+}
+
+void* do_process(void* data) {
 	ssize_t recv_count;
-	http_request_t *c_http_request = (http_request_t *)c_hrt;
-	char FileName[1024] = {0};
-	int start = 0;
-	int end = 0;
-	int parse_state;
-	char *recv_buf = c_http_request->request_buf;
-	char *msg = "Welcome\n";
-	int cfd = c_http_request->fd;
+	http_request_t *c_hreq = (http_request_t *)data;
+	char *recv_buf = c_hreq->request_buf;
+	int cfd = c_hreq->fd;
 	while(1) {
 		recv_count = recv(cfd, (void *)recv_buf, MAX_BUF, 0);
 		if (recv_count == -1) {
@@ -64,31 +89,22 @@ void* do_process(void* c_hrt) {
 			close(cfd);
 			break;
 		}	
-		c_http_request->recv_bytes = recv_count;
-		if (parse_http_request_first_line(c_http_request) == HP_PARSE_OK) {
-			// printf("uri: %.*s\n", c_http_request->rq_uri_len, (char *)c_http_request->rq_uri); 
-			sprintf(FileName, "%.*s", c_http_request->rq_uri_len, (char *)c_http_request->rq_uri); 
-		}
-		printf("Filename: %s\n", FileName);
-		if (parse_http_request_header(c_http_request) == HP_PARSE_OK) {
-			print_request_header(c_http_request);	
-		}
-		// printf("recv data: %s", recv_buf);
-		chdir("/home/pench3r/www");
-		chroot("/home/pench3r/www");
-		FILE *req_file;
-		req_file=fopen(FileName, "r");
-		char buf[100];
-		while (fgets(buf, sizeof(buf), req_file)) {
-			send(cfd, buf, strlen(buf), 0);
-		}
+		c_hreq->recv_bytes = recv_count;
+
+		if (parse_http_request(c_hreq) != HP_PARSE_OK)
+			continue;	
+
+		http_response_t *h_rsp = new_http_response_t(cfd);
+
+		process_http_request_file_out_to_response(c_hreq, h_rsp);
+
+		build_response_and_out_to_socket(h_rsp);
+
+		destory_http_response_t(h_rsp);
+
 		for (int i = 0; i<MAX_BUF; ++i) {
 			recv_buf[i] = '0';
 		}
-		for (int i = 0; i<1024; ++i) {
-			FileName[i] = '0';
-		}
-		// send(cfd, msg, strlen(msg), 0);
 	}
 }
 

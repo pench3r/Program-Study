@@ -10,6 +10,25 @@ int orgstr1_compare_tarstr2_with_fix_len(void *start, void *target, int len) {
 }
 
 
+void send_content(int fd, char *content, int content_len) {
+  int send_bytes = 10;
+  int round = content_len / send_bytes;
+  int reminder = content_len % send_bytes;
+  if (reminder != 0) {
+    round++;
+  }
+  char *send_buf = content;
+  while (round > 0) {
+    if (round == 1) {
+      send_bytes = reminder;
+    }
+    send(fd, send_buf, send_bytes, 0);
+    send_buf += send_bytes;
+    round--;
+  }
+}
+
+
 void print_request_header(http_request_t *req) {
 	request_header_t *header;
 	printf("header num: %d\n", req->header_num);
@@ -21,26 +40,76 @@ void print_request_header(http_request_t *req) {
 }
 
 
+void build_response_and_out_to_socket(http_response_t *h_rsp) {
+    char resp_header[1024];
+		int cfd = h_rsp->fd;
+    if (h_rsp->rsp_file_addr == NULL) {
+      sprintf(resp_header, "HTTP/1.1 %d %s\n", 404, "Not Found");
+      sprintf(resp_header, "%sContent-Type: text/html; charset=UTF-8\n", resp_header);
+      sprintf(resp_header, "%sServer: za\n\n", resp_header);
+          
+      send_content(cfd, resp_header, strlen(resp_header));
+    } else {
+      sprintf(resp_header, "HTTP/1.1 %d %s\n", 200, "OK");
+      sprintf(resp_header, "%sContent-Type: text/html; charset=UTF-8\n", resp_header);
+      sprintf(resp_header, "%sServer: za\n", resp_header);
+      sprintf(resp_header, "%sContent-Length: %d\n\n", resp_header, h_rsp->rsp_file_size);
+      send_content(cfd, resp_header, strlen(resp_header));
+			send_content(cfd, h_rsp->rsp_file_addr, h_rsp->rsp_file_size);
+    }
+
+}
+
+
 http_request_t* new_http_request_t(int fd, int epfd) {
-  http_request_t *new_hrt = (http_request_t *)malloc(sizeof(http_request_t));
-  new_hrt->fd = fd;
-  new_hrt->epfd = epfd;
-  new_hrt->state = 0;
-  new_hrt->recv_bytes = 0;
-  new_hrt->start = 0;
-  new_hrt->end = 0;
-	new_hrt->header_num = 0;
+  http_request_t *new_hreq = (http_request_t *)malloc(sizeof(http_request_t));
+  new_hreq->fd = fd;
+  new_hreq->epfd = epfd;
+  new_hreq->state = 0;
+  new_hreq->recv_bytes = 0;
+  new_hreq->start = 0;
+  new_hreq->end = 0;
+	new_hreq->header_num = 0;
   // for (int i = 0; i<sizeof(new_hrt->request)/sizeof(new_hrt->request[0]); ++i) {
   //  new_hrt->request[i] = '0';
   // }
+	return new_hreq;
 }
 
 
-int parse_uri(char *rq_uri, int rq_uri_len, char *filename) {
+http_response_t* new_http_response_t(int fd) {
+	http_response_t *new_hrsp = (http_response_t *)malloc(sizeof(http_response_t));
+	new_hrsp->fd = fd;
+	new_hrsp->rsp_file_addr = NULL;
+	new_hrsp->status_code = 404;
+	new_hrsp->rsp_file_size = 0;
+	return new_hrsp;
 }
 
 
-int parse_http_request_first_line(http_request_t *rt) {
+void destory_http_response_t(http_response_t* hrsp) {
+	if (hrsp->rsp_file_addr != NULL) {
+		if (munmap(hrsp->rsp_file_addr, (size_t)hrsp->rsp_file_size) == -1) {
+			perror("ummap error");
+		}	
+	}
+	free(hrsp);
+}
+
+
+int parse_http_request(http_request_t *h_req) {
+  if (parse_http_request_first_line(h_req) != HP_PARSE_OK) {
+		return HP_PARSE_ERR;
+  }
+  if (parse_http_request_header(h_req) != HP_PARSE_OK) {
+    // print_request_header(c_http_request);
+		return HP_PARSE_ERR;
+  }	
+	return HP_PARSE_OK;
+}
+
+
+int parse_http_request_first_line(http_request_t *h_req) {
 	enum {
 		hp_start = 0,
 		hp_method,
@@ -50,12 +119,12 @@ int parse_http_request_first_line(http_request_t *rt) {
 		hp_http_minor_version,
 		hp_done
 	} state;
-	state = rt->state;
-	char *request = rt->request_buf;
-	int start = rt->start;
+	state = h_req->state;
+	char *request = h_req->request_buf;
+	int start = h_req->start;
 	char ch;
 	char *cur_pos;
-	for (int end = rt->end; end<rt->recv_bytes; ++end) {
+	for (int end = h_req->end; end<h_req->recv_bytes; ++end) {
 		cur_pos = request + end;
 		ch = *cur_pos;
 		switch(state) {
@@ -89,8 +158,8 @@ int parse_http_request_first_line(http_request_t *rt) {
 				return HP_PARSE_ERR;
 			case hp_uri:
 				if (ch == ' ') {
-					rt->rq_uri = request + start;	
-					rt->rq_uri_len = end - start;
+					h_req->rq_uri = request + start;	
+					h_req->rq_uri_len = end - start;
 					// save uri start and uri stop
 					state = hp_http;
 					start = end;
@@ -115,9 +184,9 @@ int parse_http_request_first_line(http_request_t *rt) {
 					break;
 				if (ch == '\n') {
 					start = end;
-					rt->start = start + 1;
-					rt->end = end + 1;
-					rt->state = 0;
+					h_req->start = start + 1;
+					h_req->end = end + 1;
+					h_req->state = 0;
 					return HP_PARSE_OK;
 				}
 				return HP_PARSE_ERR;
@@ -129,7 +198,7 @@ int parse_http_request_first_line(http_request_t *rt) {
 }
 
 
-int parse_http_request_header(http_request_t *rt) {
+int parse_http_request_header(http_request_t *h_req) {
 	enum {
 		rq_start = 0,
 		rq_header,
@@ -138,16 +207,16 @@ int parse_http_request_header(http_request_t *rt) {
 		rq_value,
 		rq_value_done
 	}	state;
-	state = rt->state;
+	state = h_req->state;
 	char ch;
 	char *cur_pos; 
 	char *header_key;
 	char *header_val;
 	int header_key_len;
 	int header_val_len;
-	char *request = rt->request_buf;
-	int start = rt->start;
-	for (int end=rt->end; end<rt->recv_bytes; ++end) {
+	char *request = h_req->request_buf;
+	int start = h_req->start;
+	for (int end=h_req->end; end<h_req->recv_bytes; ++end) {
 		cur_pos = request + end;
 		ch = *cur_pos;
 		switch(state) {
@@ -190,9 +259,9 @@ int parse_http_request_header(http_request_t *rt) {
 				header->rh_key_len = header_key_len;
 				header->rh_val = header_val;
 				header->rh_val_len = header_val_len;
-				if (rt->header_num < MAX_HEADER_NUM-1) {
-					rt->headers[rt->header_num] = header;
-					rt->header_num++;
+				if (h_req->header_num < MAX_HEADER_NUM-1) {
+					h_req->headers[h_req->header_num] = header;
+					h_req->header_num++;
 				}
 				state = rq_value_done;
 				break;
