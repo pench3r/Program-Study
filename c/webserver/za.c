@@ -12,8 +12,10 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include "dbg.h"
 #include "thread_pool.h"
 #include "parse_http_request.h"
+
 
 #define MAX_CONN 255
 #define MAX_EPOLL_EVENTS_NUM 64
@@ -28,11 +30,13 @@ int create_and_bind_socket() {
 	struct sockaddr_in server_sockaddr;
 	int listen_fd;
 	listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+	expr_is_false_log_it_and_exit(listen_fd != -1, "create socket failed");
 	memset(&server_sockaddr, 0, sizeof(server_sockaddr));
 	server_sockaddr.sin_family = AF_INET;
 	server_sockaddr.sin_port = htons(SERVER_PORT);
 	server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	bind(listen_fd, (const struct sockaddr*)&server_sockaddr, (socklen_t)sizeof(server_sockaddr));	
+	int r = bind(listen_fd, (const struct sockaddr*)&server_sockaddr, (socklen_t)sizeof(server_sockaddr));	
+	expr_is_false_log_it_and_exit(r == 0, "bind socket failed");
 	return listen_fd;
 }
 
@@ -40,8 +44,10 @@ int create_and_bind_socket() {
 int make_socket_non_blocking(int sfd) {
 	int flags;
 	flags = fcntl(sfd, F_GETFL, 0);
+	expr_is_false_log_it_and_exit(flags != -1, "get file status flag failed");
 	flags |= O_NONBLOCK;
-	fcntl(sfd, F_SETFL, O_NONBLOCK);
+	int r = fcntl(sfd, F_SETFL, O_NONBLOCK);
+	expr_is_false_log_it_and_exit(r != -1, "set file status flag failed");
 	return 0;
 }
 
@@ -111,8 +117,9 @@ void* do_process(void* data) {
 int create_listen_nonblock_socket() {
 	int lfd, result;
 	lfd = create_and_bind_socket();
-	result = make_socket_non_blocking(lfd);
+	make_socket_non_blocking(lfd);
 	result = listen(lfd, MAX_CONN);
+	expr_is_false_log_it_and_exit(result == 0, "listen socket failed");
 	return lfd;
 }
 
@@ -121,6 +128,7 @@ int recv_client_socket() {
 	struct sockaddr_in peer_socket;
 	int peer_socket_len = sizeof(peer_socket);
 	int cfd = accept(sfd, (struct sockaddr*)&peer_socket,(socklen_t*)&peer_socket_len);
+	expr_is_false_log_it_and_exit(cfd > 0, "accept socket failed");
 	printf("recv conn from: %s\n", inet_ntoa(peer_socket.sin_addr));
 	return cfd;
 }
@@ -134,7 +142,8 @@ void epoll_add_event_with_client_socket(int sfd) {
 	event->data.fd = sfd;
 	http_request_t *c_hrt = new_http_request_t(sfd, epfd);
 	event->data.ptr = (void *)c_hrt;
-	epoll_ctl(epfd, EPOLL_CTL_ADD, sfd, event);
+	int r = epoll_ctl(epfd, EPOLL_CTL_ADD, sfd, event);
+	expr_is_false_log_it_and_exit(r == 0, "add epoll event with client socket failed");
 }
 
 void epoll_add_event_with_server_socket(int sfd) {
@@ -143,7 +152,8 @@ void epoll_add_event_with_server_socket(int sfd) {
 	event->events = EPOLLIN | EPOLLET;
 	event->data.u64 = 0;
 	event->data.fd = sfd;
-	epoll_ctl(epfd, EPOLL_CTL_ADD, sfd, event);
+	int r = epoll_ctl(epfd, EPOLL_CTL_ADD, sfd, event);
+	expr_is_false_log_it_and_exit(r == 0, "add epoll event with server socket failed");
 }
 
 
@@ -152,7 +162,7 @@ void proc_events_with_thread_pool(struct epoll_event *events, int events_num, th
 		if ((events[i].events & EPOLLERR) ||
 				(events[i].events & EPOLLHUP) ||
 				(!(events[i].events & EPOLLIN))) {
-			fprintf(stderr, "epoll error\n");
+			log_err("recv error epoll event");
 			close(events[i].data.fd);
 		} else if (sfd == events[i].data.fd) {
 			// server socket have new conn
@@ -171,13 +181,10 @@ void monitor_and_proc_event_with_thread_pool(thread_pool_t *tpt) {
 	struct epoll_event *events;
 	int epoll_result;
 	events = calloc(MAX_EPOLL_EVENTS_NUM, sizeof(struct epoll_event));
+	expr_is_false_log_it_and_exit(events != NULL, "create epoll events failed");
 	epoll_result = epoll_wait(epfd, events, MAX_EPOLL_EVENTS_NUM, -1);
-	if (epoll_result < 0) {
-		exit(-1);
-	}
-	if (epoll_result > 0) {
-		proc_events_with_thread_pool(events, epoll_result, tpt);
-	}
+	expr_is_false_log_it_and_exit(epoll_result > 0, "epoll wait error");
+	proc_events_with_thread_pool(events, epoll_result, tpt);
 }
 
 
@@ -192,8 +199,8 @@ int main(int argc, char *argv[]) {
 	struct epoll_event *events;
 	int epoll_result;
 	epfd = epoll_create1(0);
+	expr_is_false_log_it_and_exit(epfd > 0, "create epoll instance failed");
 	epoll_add_event_with_server_socket(sfd);
-	events = calloc(MAX_EPOLL_EVENTS_NUM, sizeof(struct epoll_event));
 	while (1) {
 		monitor_and_proc_event_with_thread_pool(tpt);
 	}
